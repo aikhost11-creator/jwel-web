@@ -1,0 +1,55 @@
+<div class="fav-page">
+
+    <!-- ── HEADER ── -->
+    <div class="fav-header">
+        <h1 class="fav-title">
+            FAVOURITES
+            <span class="fav-count" *ngIf="items.length > 0">({{ items.length }})</span>
+        </h1>
+        <div class="fav-header-divider"></div>
+    </div>
+
+    <!-- ── EMPTY STATE ── -->
+    <div class="fav-empty" *ngIf="items.length === 0">
+        <p class="fav-empty-main">You have no saved items.</p>
+        <p class="fav-empty-sub">
+            Start to add your favourites by clicking the little heart next to<br />
+            items – we'll sync these across all your devices.
+        </p>
+        <a routerLink="/shop" class="fav-shop-btn">CONTINUE SHOPPING</a>
+    </div>
+
+    <!-- ── ITEMS LIST ── -->
+    <div class="fav-list" *ngIf="items.length > 0">
+        <div class="fav-item" *ngFor="let item of items">
+
+            <!-- Image -->
+            <a class="fav-img-wrap" [routerLink]="'/product/' + item.slug">
+                <img *ngIf="getFirstImage(item.images)" [src]="getFirstImage(item.images)" [alt]="item.name" />
+                <div *ngIf="!getFirstImage(item.images)" class="fav-img-placeholder">
+                    <span><i class="fa-light fa-image"></i></span>
+                </div>
+            </a>
+
+            <!-- Info -->
+            <div class="fav-item-info">
+                <a class="fav-item-name" [routerLink]="'/product/' + item.slug">{{ item.name }}</a>
+
+                <div class="fav-item-price">
+                    <span class="fav-price-sale" *ngIf="item.salePrice">
+                        £{{ item.salePrice | number:'1.2-2' }}
+                    </span>
+                    <span class="fav-price-orig" [class.crossed]="item.salePrice">
+                        £{{ item.price | number:'1.2-2' }}
+                    </span>
+                </div>
+
+                <button class="fav-remove-btn" (click)="remove(item.id)">Remove</button>
+
+                <a class="fav-add-btn" [routerLink]="'/product/' + item.slug">ADD TO BAG</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>

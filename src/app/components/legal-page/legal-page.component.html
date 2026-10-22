@@ -1,0 +1,35 @@
+<!-- Loading -->
+@if(isLoading) {
+<div class="lp-page">
+    <div class="lp-inner">
+        <div class="lp-sk-title"></div>
+        <div class="lp-sk-line w80 mt-3"></div>
+        <div class="lp-sk-line w60 mt-2"></div>
+        <div class="lp-sk-line w90 mt-2"></div>
+        <div class="lp-sk-line w50 mt-2"></div>
+    </div>
+</div>
+}
+
+<!-- Content -->
+@if(!isLoading && !notFound) {
+<div class="lp-page">
+    <div class="lp-inner">
+        <div class="lp-header">
+            <h1 class="lp-title">{{ title }}</h1>
+            <div class="lp-divider"></div>
+        </div>
+        <div class="lp-content" [innerHTML]="content"></div>
+    </div>
+</div>
+}
+
+<!-- Not found -->
+@if(!isLoading && notFound) {
+<div class="lp-page lp-not-found">
+    <div class="lp-inner">
+        <h2>Page not found</h2>
+        <a routerLink="/" class="lp-back">← Back to Home</a>
+    </div>
+</div>
+}

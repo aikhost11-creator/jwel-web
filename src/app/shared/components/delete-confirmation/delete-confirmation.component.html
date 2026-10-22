@@ -1,0 +1,22 @@
+<main>
+    <div class="delete-popup-main">
+        <div class="delete-popup-icon">
+            <i class="fa-light fa-circle-exclamation"></i>
+        </div>
+        @if(data){
+            <div class="delete-popup-ttl">{{data.title}}</div>
+            <div class="delete-popup-dtl">{{data.detail}}</div>
+            <div class="delete-popup-btns-main">
+                <button class="delete-popup-single-btn cancel me-1" (click)="activeModal.close()">Cancel</button>
+                <button class="delete-popup-single-btn yes" (click)="activeModal.close(true)">{{data.btnTxt}}</button>
+            </div>
+        }@else{
+            <div class="delete-popup-ttl">Are you sure?</div>
+            <div class="delete-popup-dtl">You want to delete this record!</div>
+            <div class="delete-popup-btns-main">
+                <button class="delete-popup-single-btn cancel me-1" (click)="activeModal.close()">Cancel</button>
+                <button class="delete-popup-single-btn yes" (click)="activeModal.close(true)">Yes Delete!</button>
+            </div>
+        }
+    </div>
+</main>

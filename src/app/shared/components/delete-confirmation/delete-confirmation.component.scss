@@ -1,0 +1,52 @@
+.delete-popup-main{
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .delete-popup-icon{
+        line-height: 80px;
+        font-size: 80px;
+        margin-bottom: 15px;
+        color: var(--secondary);
+    }
+    .delete-popup-ttl{
+        font-size: 30px;
+        font-weight: 400;
+        color: var(--heading-font);
+        text-align: center;
+    }
+    .delete-popup-dtl{
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--normal-font);
+    }
+    .delete-popup-btns-main{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 25px;
+
+        .delete-popup-single-btn{
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: none;
+            padding: 0 20px;
+            font-size: 12px;
+            font-weight: 500;
+
+            &.yes{
+                background-color: var(--secondary);
+                color: var(--white);
+            }
+            &.cancel{
+                background-color: var(--sidebar-bg);
+                color: var(--heading-font);
+            }
+        }
+    }
+}

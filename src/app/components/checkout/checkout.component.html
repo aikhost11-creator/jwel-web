@@ -1,0 +1,254 @@
+<div class="checkout-page">
+  <div class="checkout-container">
+
+    <!-- ── STEP 1: DELIVERY ── -->
+    <div *ngIf="step === 1">
+      <h1 class="checkout-title">Delivery</h1>
+
+      <!-- Total row -->
+      <div class="checkout-total-row">
+        <span>Total</span>
+        <span class="checkout-total-amount">{{ currency }}{{ total.toFixed(2) }}</span>
+      </div>
+
+      <!-- Delivery tabs -->
+      <div class="checkout-tabs">
+        <button class="checkout-tab active">
+          <span><i class="fa-light fa-truck"></i></span>
+          Home Delivery {{ currency }}{{ deliveryCharge.toFixed(2) }}
+        </button>
+        <button class="checkout-tab disabled" disabled>
+          <span><i class="fa-light fa-store"></i></span>
+          Collection Unavailable
+        </button>
+      </div>
+
+      <!-- Deliver To -->
+      <div class="checkout-section">
+        <div class="checkout-section-header">
+          <span class="checkout-section-title">Deliver To</span>
+          <button type="button" class="checkout-link" (click)="openAddressForm()">Add New Address</button>
+        </div>
+        <div class="checkout-address-loading" *ngIf="addrLoading">
+          <span><i class="fa-light fa-spinner-third fa-spin"></i></span> Loading addresses...
+        </div>
+
+        <div class="checkout-address-form" *ngIf="showAddressForm && !addrLoading">
+          <div class="checkout-form-row">
+            <input class="checkout-input" placeholder="First name *" [(ngModel)]="newAddress.firstName" />
+            <input class="checkout-input" placeholder="Last name" [(ngModel)]="newAddress.lastName" />
+          </div>
+          <input class="checkout-input" placeholder="Address line 1 *" [(ngModel)]="newAddress.line1" />
+          <input class="checkout-input" placeholder="Address line 2" [(ngModel)]="newAddress.line2" />
+          <div class="checkout-form-row">
+            <input class="checkout-input" placeholder="City *" [(ngModel)]="newAddress.city" />
+            <input class="checkout-input" placeholder="State / County" [(ngModel)]="newAddress.county" />
+          </div>
+          <div class="checkout-form-row">
+            <input class="checkout-input" placeholder="Postcode *" [(ngModel)]="newAddress.postcode" />
+            <input class="checkout-input" placeholder="Country" [(ngModel)]="newAddress.country" />
+          </div>
+          <button type="button" class="checkout-primary-btn" [disabled]="addrSaving" (click)="saveAddress()">
+            {{ addrSaving ? 'Saving…' : 'Save Address' }}
+          </button>
+        </div>
+
+        <div class="checkout-address-empty" *ngIf="!addrLoading && !showAddressForm && addresses.length === 0">
+          <p>No saved addresses. Add an address to continue.</p>
+        </div>
+        <div class="checkout-address-list" *ngIf="!addrLoading && addresses.length > 0">
+          <div class="checkout-address-card" *ngFor="let addr of addresses"
+            [class.selected]="selectedAddress?.id === addr.id"
+            (click)="selectedAddress = addr">
+            <div class="checkout-address-radio">
+              <span class="checkout-radio-dot" [class.active]="selectedAddress?.id === addr.id"></span>
+            </div>
+            <div class="checkout-address-text">
+              <strong>{{ addr.firstName }} {{ addr.lastName }}</strong>
+              <span *ngIf="addr.isDefault" class="checkout-default-badge">Default</span>
+              <p>{{ addr.line1 }}<span *ngIf="addr.line2">, {{ addr.line2 }}</span></p>
+              <p *ngIf="addr.city">{{ addr.city }}<span *ngIf="addr.county">, {{ addr.county }}</span></p>
+              <p>{{ addr.postcode | uppercase }}, {{ addr.country }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parcel accordion -->
+      <div class="checkout-accordion">
+        <button class="checkout-accordion-btn" (click)="parcelAccordionOpen = !parcelAccordionOpen">
+          <span>Parcel 1 of 1 ({{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }})</span>
+          <span><i [class]="parcelAccordionOpen ? 'fa-light fa-chevron-up' : 'fa-light fa-chevron-down'"></i></span>
+        </button>
+        <div class="checkout-accordion-body" *ngIf="parcelAccordionOpen">
+          <div class="checkout-parcel-items">
+            <div class="checkout-parcel-item" *ngFor="let item of items">
+              <img [src]="item.image" [alt]="item.name" class="checkout-parcel-img" />
+              <div class="checkout-parcel-info">
+                <p class="checkout-parcel-name">{{ item.name }}</p>
+                <p class="checkout-parcel-opts" *ngFor="let opt of getOptionEntries(item.selectedOptions)">
+                  {{ opt.key }}: {{ opt.value }}
+                </p>
+                <p class="checkout-parcel-qty">Qty: {{ item.quantity }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery date -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Select Delivery Date</div>
+        <div class="checkout-date-row">
+          <div class="checkout-date-box" *ngFor="let d of deliveryDates"
+            [class.selected]="selectedDate === d.dateStr"
+            (click)="selectDate(d.dateStr)">
+            <span class="checkout-date-day">{{ d.label }}</span>
+            <span class="checkout-date-num">{{ d.date.getDate() }}</span>
+          </div>
+        </div>
+        <div class="checkout-timeslot">
+          <label class="checkout-radio-label">
+            <input type="radio" name="timeslot" checked />
+            <span>7:30am – 6pm</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Contact number -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Contact Number for your Delivery</div>
+        <input class="checkout-input" type="tel" placeholder="Enter phone number" [(ngModel)]="contactPhone" />
+      </div>
+
+      <!-- Terms -->
+      <p class="checkout-terms">
+        By continuing you agree to our <a href="#" class="checkout-link">Terms &amp; Conditions</a> and <a href="#" class="checkout-link">Privacy Policy</a>.
+      </p>
+
+      <!-- Continue button -->
+      <button class="checkout-btn" [disabled]="!contactPhone.trim() || !selectedAddress" (click)="continueToPayment()">
+        CONTINUE TO PAYMENT
+      </button>
+
+      <!-- Your Order accordion -->
+      <div class="checkout-accordion checkout-order-accordion">
+        <button class="checkout-accordion-btn" (click)="orderAccordionOpen = !orderAccordionOpen">
+          <span>Your Order</span>
+          <span><i [class]="orderAccordionOpen ? 'fa-light fa-chevron-up' : 'fa-light fa-chevron-down'"></i></span>
+        </button>
+        <div class="checkout-accordion-body" *ngIf="orderAccordionOpen">
+          <table class="checkout-order-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Item</th>
+                <th>Size</th>
+                <th>Qty</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items">
+                <td><img [src]="item.image" [alt]="item.name" class="checkout-order-img" /></td>
+                <td>{{ item.name }}</td>
+                <td>
+                  <span *ngFor="let opt of getOptionEntries(item.selectedOptions)">{{ opt.value }}</span>
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ currency }}{{ ((item.salePrice ?? item.price) * item.quantity).toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="checkout-order-summary">
+            <div class="checkout-summary-row">
+              <span>Order Value</span>
+              <span>{{ currency }}{{ subtotal.toFixed(2) }}</span>
+            </div>
+            <div class="checkout-summary-row checkout-summary-total">
+              <span>Total</span>
+              <span>{{ currency }}{{ total.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: PAYMENT ── -->
+    <div *ngIf="step === 2">
+      <h1 class="checkout-title">Payment</h1>
+
+      <!-- Order summary -->
+      <div class="checkout-summary-box">
+        <div class="checkout-summary-row">
+          <span>Order Value</span>
+          <span>{{ currency }}{{ subtotal.toFixed(2) }}</span>
+        </div>
+        <div class="checkout-summary-row">
+          <span>Delivery</span>
+          <span>{{ currency }}{{ deliveryCharge.toFixed(2) }}</span>
+        </div>
+        <div class="checkout-summary-row checkout-summary-total">
+          <span>Total</span>
+          <span>{{ currency }}{{ total.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- Payment options -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Select Payment Method</div>
+
+        <div class="checkout-payment-option disabled">
+          <input type="radio" name="payment" disabled />
+          <span><i class="fa-light fa-credit-card"></i></span>
+          <span>Credit / Debit Card</span>
+          <span class="checkout-unavailable">Unavailable</span>
+        </div>
+
+        <div class="checkout-payment-option disabled">
+          <input type="radio" name="payment" disabled />
+          <span><i class="fa-brands fa-paypal"></i></span>
+          <span>PayPal</span>
+          <span class="checkout-unavailable">Unavailable</span>
+        </div>
+
+        <div class="checkout-payment-option disabled">
+          <input type="radio" name="payment" disabled />
+          <span><i class="fa-brands fa-google-pay"></i></span>
+          <span>Google Pay</span>
+          <span class="checkout-unavailable">Unavailable</span>
+        </div>
+
+        <div class="checkout-payment-option disabled">
+          <input type="radio" name="payment" disabled />
+          <span><i class="fa-light fa-gift-card"></i></span>
+          <span>Giftcard / eVoucher</span>
+          <span class="checkout-unavailable">Unavailable</span>
+        </div>
+
+        <div class="checkout-payment-option active">
+          <input type="radio" name="payment" checked />
+          <span class="checkout-razorpay-logo">Razorpay</span>
+          <span class="checkout-active-badge">Active</span>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <p class="checkout-terms">
+        By placing your order you agree to our <a href="#" class="checkout-link">Terms &amp; Conditions</a> and <a href="#" class="checkout-link">Privacy Policy</a>.
+      </p>
+
+      <!-- Pay Now button -->
+      <button class="checkout-btn" [disabled]="isProcessing" (click)="payNow()">
+        <span *ngIf="!isProcessing">PAY NOW — {{ currency }}{{ total.toFixed(2) }}</span>
+        <span *ngIf="isProcessing"><span><i class="fa-light fa-spinner-third fa-spin"></i></span> Processing...</span>
+      </button>
+
+      <!-- Back link -->
+      <button class="checkout-back-btn" (click)="goBackToDelivery()">
+        <span><i class="fa-light fa-arrow-left"></i></span> Back to Delivery
+      </button>
+    </div>
+
+  </div>
+</div>

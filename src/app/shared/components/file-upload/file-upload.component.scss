@@ -1,0 +1,65 @@
+/* From Uiverse.io by csemszepp */ 
+.custum-file-upload {
+    height: 200px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    gap: 20px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--dark-border);
+    background-color: var(--sidebar-bg);
+    padding: 1.5rem;
+    border-radius: 10px;
+    
+    &.selected{
+        border: 2px dashed var(--green-color) !important;
+        background-color: var(--green-bg) !important;
+    }
+  }
+  
+  .custum-file-upload .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .custum-file-upload .icon svg {
+    height: 100px;
+    fill: var(--normal-font);
+  }
+  
+  .custum-file-upload.selected .icon svg {
+    fill: var(--green-color) !important;
+  }
+  
+  .custum-file-upload .text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .custum-file-upload .text span {
+    font-weight: 400;
+    color: var(--normal-font);
+  }
+  
+  .custum-file-upload.selected .text span {
+    color: var(--green-color) !important;
+  }
+  
+  .custum-file-upload input {
+    display: none;
+  }
+  
+  .uploaded-img{
+    height: 100px;
+    max-width: 100%;
+  }
+  .url-link{
+    background-color: var(--green-bg);
+    color: var(--green-color);
+    border-color: var(--green-color);
+  }

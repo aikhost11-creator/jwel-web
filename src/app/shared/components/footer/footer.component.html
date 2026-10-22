@@ -1,0 +1,337 @@
+<!-- Newsletter strip -->
+<section class="ft-newsletter">
+  <div class="ft-newsletter-glow"></div>
+  <div class="ft-container ft-newsletter-inner">
+    <div class="ft-newsletter-copy">
+      <span class="ft-eyebrow">
+        <svg class="ft-inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Stay in the loop
+      </span>
+      <h3 class="ft-newsletter-title">Notes from the maison</h3>
+      <p class="ft-newsletter-sub">New collections, private offers and care tips. No noise.</p>
+    </div>
+    <form class="ft-newsletter-form" (submit)="$event.preventDefault(); subscribeNewsletter()">
+      <span class="ft-input-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </span>
+      <input
+        type="email"
+        class="ft-newsletter-input"
+        placeholder="Enter your email"
+        [(ngModel)]="newsletterEmail"
+        name="newsletterEmail"
+        autocomplete="email" />
+      <button type="submit" class="ft-newsletter-btn">
+        Subscribe
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</section>
+
+<footer class="site-footer">
+
+  <!-- Trust strip -->
+  <div class="ft-trust">
+    <div class="ft-container ft-trust-grid">
+      <div class="ft-trust-item" *ngFor="let b of trustBadges">
+        <span class="ft-trust-icon">
+          <ng-container [ngSwitch]="b.icon">
+            <svg *ngSwitchCase="'shipping'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            <svg *ngSwitchCase="'cod'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+            </svg>
+            <svg *ngSwitchCase="'secure'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+            <svg *ngSwitchCase="'returns'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+            </svg>
+          </ng-container>
+        </span>
+        <div>
+          <strong>{{ b.label }}</strong>
+          <span>{{ b.sub }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="ft-main desktop-only">
+    <div class="ft-container ft-main-grid">
+
+      <!-- Brand + logo (same as header) -->
+      <div class="ft-brand">
+        <a routerLink="/" class="ft-logo-link">
+          <span class="ft-logo-wrap">
+            <img [src]="logoUrl" [alt]="siteName" class="ft-logo" />
+          </span>
+        </a>
+        <p class="ft-brand-text">
+          Quality products, fast pan-India delivery &amp; Cash on Delivery — shop with confidence at
+          <strong>{{ displayDomain }}</strong>.
+        </p>
+
+        <div class="ft-social" *ngIf="hasSocial">
+          <a *ngIf="siteConfig.instagramURL" [href]="siteConfig.instagramURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </a>
+          <a *ngIf="siteConfig.facebookURL" [href]="siteConfig.facebookURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+            </svg>
+          </a>
+          <a *ngIf="siteConfig.youtubeURL" [href]="siteConfig.youtubeURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/>
+              <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/>
+            </svg>
+          </a>
+          <a *ngIf="siteConfig.twitterURL" [href]="siteConfig.twitterURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+            </svg>
+          </a>
+          <a *ngIf="siteConfig.linkedInURL" [href]="siteConfig.linkedInURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
+              <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Explore -->
+      <div class="ft-col">
+        <h4 class="ft-col-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+          </svg>
+          Explore
+        </h4>
+        <ul class="ft-link-list">
+          <li *ngFor="let link of shopLinks">
+            <a [routerLink]="link.url" class="ft-link-row">
+              <span class="ft-link-icon">
+                <ng-container [ngSwitch]="link.icon">
+                  <svg *ngSwitchCase="'home'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                  <svg *ngSwitchCase="'shop'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+                  </svg>
+                  <svg *ngSwitchCase="'about'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  <svg *ngSwitchCase="'faq'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </ng-container>
+              </span>
+              {{ link.label }}
+              <svg class="ft-link-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="ft-col">
+        <h4 class="ft-col-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+          Contact
+        </h4>
+        <ul class="ft-contact-list">
+          <li *ngIf="contactEmail">
+            <span class="ft-contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </span>
+            <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>
+          </li>
+          <li *ngIf="contactPhone">
+            <span class="ft-contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+            </span>
+            <a [href]="'tel:' + contactPhone">{{ contactPhone }}</a>
+          </li>
+          <li>
+            <span class="ft-contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+              </svg>
+            </span>
+            <span>{{ displayDomain }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Policy cards -->
+    <div class="ft-container">
+      <div class="ft-policies-head">
+        <span class="ft-eyebrow ft-eyebrow-light">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          Legal
+        </span>
+        <h4 class="ft-policies-title">Policies &amp; Information</h4>
+        <p class="ft-policies-sub">Tap any policy below — shipping, returns, privacy &amp; terms clearly explained.</p>
+      </div>
+      <div class="ft-policies-grid">
+        <a *ngFor="let p of policyPages" [routerLink]="'/' + p.slug" class="ft-policy-card">
+          <span class="ft-policy-icon">
+            <ng-container [ngSwitch]="p.icon">
+              <svg *ngSwitchCase="'shipping'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+              <svg *ngSwitchCase="'return'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+              </svg>
+              <svg *ngSwitchCase="'privacy'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <svg *ngSwitchCase="'terms'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </ng-container>
+          </span>
+          <span class="ft-policy-label">{{ p.label }}</span>
+          <span class="ft-policy-desc">{{ p.desc }}</span>
+          <span class="ft-policy-arrow">
+            Read policy
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile -->
+  <div class="ft-mobile mobile-only">
+    <div class="ft-mob-brand">
+      <span class="ft-logo-wrap ft-logo-wrap--mob">
+        <img [src]="logoUrl" [alt]="siteName" class="ft-mob-logo" />
+      </span>
+      <p>{{ displayDomain }}</p>
+      <div class="ft-social ft-social--mob" *ngIf="hasSocial">
+        <a *ngIf="siteConfig.instagramURL" [href]="siteConfig.instagramURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a *ngIf="siteConfig.facebookURL" [href]="siteConfig.facebookURL" target="_blank" rel="noopener" class="ft-social-btn" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="ft-acc-item" *ngFor="let col of mobileColumns">
+      <button class="ft-acc-trigger" type="button" (click)="toggleSection(col.id)">
+        <span>{{ col.heading }}</span>
+        <svg [class.open]="isOpen(col.id)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <ul class="ft-acc-body" *ngIf="isOpen(col.id)">
+        <li *ngFor="let link of col.links">
+          <a [routerLink]="link.url">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+            {{ link.label }}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ft-mob-policies">
+      <p class="ft-mob-policies-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Policies &amp; Legal
+      </p>
+      <div class="ft-mob-policy-list">
+        <a *ngFor="let p of policyPages" [routerLink]="'/' + p.slug" class="ft-mob-policy-pill">
+          <span class="ft-mob-policy-icon">
+            <ng-container [ngSwitch]="p.icon">
+              <svg *ngSwitchCase="'shipping'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <svg *ngSwitchCase="'return'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+              <svg *ngSwitchCase="'privacy'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <svg *ngSwitchCase="'terms'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </ng-container>
+          </span>
+          {{ p.label }}
+          <svg class="ft-pill-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="ft-bottom">
+    <div class="ft-container ft-bottom-inner">
+      <p class="ft-copy">
+        &copy; {{ currentYear }} <strong>{{ displayDomain }}</strong>. All rights reserved.
+      </p>
+      <div class="ft-bottom-links">
+        <a *ngFor="let p of policyPages" [routerLink]="'/' + p.slug">{{ p.label }}</a>
+      </div>
+      <div class="ft-bottom-badges">
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          Secure
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+            <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+          Pan India
+        </span>
+        <span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+          COD
+        </span>
+      </div>
+    </div>
+  </div>
+
+</footer>

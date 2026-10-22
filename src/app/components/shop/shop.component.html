@@ -1,0 +1,323 @@
+<!-- SHOP PAGE -->
+<div class="shop-page">
+
+  <!-- ══ MOBILE TOP BAR (Sort + Filter buttons) ══ -->
+  <div class="mob-topbar">
+    <button class="mob-topbar-btn" (click)="openMobileSort($event)">
+      <svg viewBox="0 0 20 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <line x1="0" y1="3" x2="12" y2="3"/>
+        <line x1="0" y1="8" x2="8" y2="8"/>
+        <line x1="0" y1="13" x2="5" y2="13"/>
+        <polyline points="15,1 18,4 15,7"/>
+        <line x1="18" y1="4" x2="18" y2="15"/>
+      </svg>
+      SORT
+    </button>
+    <button class="mob-topbar-btn" (click)="openMobileFilter($event)">
+      <svg viewBox="0 0 20 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="5" cy="4" r="2"/><line x1="0" y1="4" x2="3" y2="4"/><line x1="7" y1="4" x2="20" y2="4"/>
+        <circle cx="15" cy="12" r="2"/><line x1="0" y1="12" x2="13" y2="12"/><line x1="17" y1="12" x2="20" y2="12"/>
+      </svg>
+      FILTER
+      <span class="mob-filter-badge" *ngIf="activeFilterCount > 0">{{activeFilterCount}}</span>
+    </button>
+
+    <!-- Mobile Sort dropdown -->
+    <div class="mob-sort-panel" *ngIf="showMobileSort" (click)="stopProp($event)">
+      <div class="mob-sort-arrow"></div>
+      <div class="sort-item" *ngFor="let s of sortOptions"
+        [class.active]="selectedSort === s.value" (click)="selectSort(s.value)">
+        <span class="sort-radio" [class.on]="selectedSort === s.value">
+          <svg *ngIf="selectedSort === s.value" viewBox="0 0 12 10" width="10" height="8" fill="none">
+            <polyline points="1,5 4.5,8.5 11,1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        {{s.label}}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Title ── -->
+  <div class="shop-title-row">
+    <h1 class="shop-title">
+      {{pageTitle}}
+      <span class="shop-count" *ngIf="!isInitialLoad">({{totalCount | number}})</span>
+    </h1>
+  </div>
+
+  <div class="subcat-row" *ngIf="childCategories.length">
+    <a class="subcat-chip" *ngFor="let c of childCategories" [routerLink]="['/category', c.id]">{{ c.name }}</a>
+  </div>
+
+  <!-- ══ DESKTOP FILTER BAR ══ -->
+  <div class="filter-bar" (click)="stopProp($event)">
+
+    <!-- Row 1 -->
+    <div class="filter-row">
+
+      <!-- New In -->
+      <label class="filter-newin" [class.checked]="newIn" (click)="toggleNewIn()">
+        <span class="newin-box">
+          <svg *ngIf="newIn" viewBox="0 0 12 10" width="10" height="8" fill="none">
+            <polyline points="1,5 4.5,8.5 11,1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        New In
+        <span class="newin-count" *ngIf="!isInitialLoad">({{totalCount | number}})</span>
+      </label>
+
+      <!-- Category -->
+      <div class="fdd" [class.open]="openDropdown==='cat'">
+        <button class="fdd-btn" (click)="toggleDd('cat', $event)">
+          Category
+          <span class="fdd-val" *ngIf="selectedCategoryId">: {{getCategoryName(selectedCategoryId)}}</span>
+          <svg class="fdd-chev" viewBox="0 0 10 6" width="9" height="6" fill="none">
+            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="fdd-panel" *ngIf="openDropdown==='cat'">
+          <div class="fdd-item" [class.selected]="!selectedCategoryId" (click)="selectCategory(null)">
+            <span class="fdd-radio" [class.on]="!selectedCategoryId"></span>
+            All Categories
+          </div>
+          <div class="fdd-item" *ngFor="let c of allCategories"
+            [class.selected]="selectedCategoryId === c.id" (click)="selectCategory(c.id)">
+            <span class="fdd-radio" [class.on]="selectedCategoryId === c.id"></span>
+            {{c.name}}
+          </div>
+          <div class="fdd-empty" *ngIf="allCategories.length === 0">No categories</div>
+        </div>
+      </div>
+
+      <!-- Price -->
+      <div class="fdd" [class.open]="openDropdown==='price'">
+        <button class="fdd-btn" (click)="toggleDd('price', $event)" [class.active]="minPrice||maxPrice">
+          Price
+          <span class="fdd-val" *ngIf="minPrice||maxPrice">: {{sharedService.currency}}{{minPrice||0}}–{{sharedService.currency}}{{maxPrice||'∞'}}</span>
+          <svg class="fdd-chev" viewBox="0 0 10 6" width="9" height="6" fill="none">
+            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="fdd-panel price-panel" *ngIf="openDropdown==='price'">
+          <div class="price-inputs">
+            <div class="price-inp">
+              <span>{{sharedService.currency}}</span>
+              <input type="number" placeholder="Min" [(ngModel)]="tempMin" min="0" (keyup.enter)="applyPrice()" />
+            </div>
+            <span class="price-dash">–</span>
+            <div class="price-inp">
+              <span>{{sharedService.currency}}</span>
+              <input type="number" placeholder="Max" [(ngModel)]="tempMax" min="0" (keyup.enter)="applyPrice()" />
+            </div>
+          </div>
+          <div class="price-actions">
+            <button class="price-clear" *ngIf="minPrice||maxPrice" (click)="clearPrice()">Clear</button>
+            <button class="price-go" (click)="applyPrice()">Go</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MORE / LESS -->
+      <button class="fdd-more" (click)="showMoreFilters=!showMoreFilters; stopProp($event)">
+        <svg viewBox="0 0 18 12" width="14" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <line x1="0" y1="2" x2="18" y2="2"/>
+          <line x1="3" y1="6" x2="15" y2="6"/>
+          <line x1="6" y1="10" x2="12" y2="10"/>
+        </svg>
+        {{showMoreFilters ? 'LESS' : 'MORE'}}
+      </button>
+
+      <!-- Sort -->
+      <div class="fdd fdd-sort" [class.open]="openDropdown==='sort'">
+        <button class="fdd-btn" (click)="toggleDd('sort', $event)">
+          Sort
+          <svg class="fdd-chev" viewBox="0 0 10 6" width="9" height="6" fill="none">
+            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="fdd-panel sort-panel" *ngIf="openDropdown==='sort'">
+          <div class="sort-item" *ngFor="let s of sortOptions"
+            [class.active]="selectedSort === s.value" (click)="selectSort(s.value)">
+            <span class="sort-radio" [class.on]="selectedSort === s.value">
+              <svg *ngIf="selectedSort === s.value" viewBox="0 0 12 10" width="10" height="8" fill="none">
+                <polyline points="1,5 4.5,8.5 11,1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            {{s.label}}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Row 2 — MORE expanded (Price row) -->
+    <div class="filter-row filter-row-2" *ngIf="showMoreFilters">
+      <span class="row2-label">Additional filters coming soon</span>
+    </div>
+
+    <!-- Clear All -->
+    <div class="filter-clear-row" *ngIf="hasActiveFilters">
+      <div class="active-chips">
+        <span class="chip" *ngIf="selectedCategoryId">
+          {{getCategoryName(selectedCategoryId)}} <button (click)="selectCategory(null)">✕</button>
+        </span>
+        <span class="chip" *ngIf="minPrice||maxPrice">
+          {{sharedService.currency}}{{minPrice||0}}–{{sharedService.currency}}{{maxPrice||'∞'}}
+          <button (click)="clearPrice()">✕</button>
+        </span>
+        <span class="chip" *ngIf="newIn">
+          New In <button (click)="toggleNewIn()">✕</button>
+        </span>
+      </div>
+      <button class="clear-all-btn" (click)="clearAllFilters()">Clear All Filters</button>
+    </div>
+
+  </div>
+
+  <!-- ══ MOBILE FILTER PANEL (full screen slide-up) ══ -->
+  <div class="mob-filter-overlay" *ngIf="showMobileFilter" (click)="closeMobileFilter()"></div>
+  <div class="mob-filter-panel" [class.open]="showMobileFilter">
+    <div class="mob-filter-head">
+      <button class="mob-filter-close" (click)="closeMobileFilter()">✕</button>
+      <span>Filter Products</span>
+      <button class="mob-filter-clearall" (click)="clearAllFilters()">Clear All</button>
+    </div>
+    <div class="mob-filter-body">
+
+      <!-- New In -->
+      <div class="mob-filter-section" (click)="toggleNewIn()">
+        <div class="mob-filter-row">
+          <span class="mob-filter-label">New In</span>
+          <span class="mob-filter-val" *ngIf="!isInitialLoad">({{totalCount | number}})</span>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="mob-filter-section">
+        <div class="mob-filter-row" (click)="toggleDd('mob-cat', $event)">
+          <span class="mob-filter-label">Category</span>
+          <span class="mob-filter-selected" *ngIf="selectedCategoryId">{{getCategoryName(selectedCategoryId)}}</span>
+        </div>
+        <div class="mob-filter-options" *ngIf="openDropdown==='mob-cat'">
+          <div class="mob-opt" [class.on]="!selectedCategoryId" (click)="selectCategory(null)">All Categories</div>
+          <div class="mob-opt" *ngFor="let c of allCategories"
+            [class.on]="selectedCategoryId===c.id" (click)="selectedCategoryId=c.id">
+            {{c.name}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Price -->
+      <div class="mob-filter-section">
+        <div class="mob-filter-row" (click)="toggleDd('mob-price', $event)">
+          <span class="mob-filter-label">Price</span>
+          <span class="mob-filter-selected" *ngIf="minPrice||maxPrice">{{sharedService.currency}}{{minPrice||0}}–{{sharedService.currency}}{{maxPrice||'∞'}}</span>
+        </div>
+        <div class="mob-filter-options" *ngIf="openDropdown==='mob-price'">
+          <div class="mob-price-row">
+            <div class="price-inp">
+              <span>{{sharedService.currency}}</span>
+              <input type="number" placeholder="Min" [(ngModel)]="tempMin" min="0" />
+            </div>
+            <span class="price-dash">–</span>
+            <div class="price-inp">
+              <span>{{sharedService.currency}}</span>
+              <input type="number" placeholder="Max" [(ngModel)]="tempMax" min="0" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="mob-filter-footer">
+      <button class="mob-view-btn" (click)="applyFilters()">
+        VIEW {{totalCount | number}} PRODUCTS
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Product Grid ── -->
+  <div class="product-grid">
+
+    <!-- Skeleton -->
+    <ng-container *ngIf="isInitialLoad">
+      <div class="product-card sk-card" *ngFor="let s of skeletonArr">
+        <div class="sk-img"></div>
+        <div class="sk-line w80"></div>
+        <div class="sk-line w50"></div>
+        <div class="sk-line w40"></div>
+      </div>
+    </ng-container>
+
+    <!-- Products -->
+    <a class="product-card" *ngFor="let p of products" [routerLink]="['/product', p.slug]">
+      <div class="prod-img-wrap">
+        <img *ngIf="getFirstImage(p.images)" [src]="getFirstImage(p.images)" [alt]="p.name" loading="lazy" />
+        <div *ngIf="!getFirstImage(p.images)" class="prod-img-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" width="36" height="36">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <span class="prod-sale-tag" *ngIf="p.salePrice">SALE</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">{{p.name}}</div>
+        <div class="prod-prices">
+          <span class="price-sale" *ngIf="p.salePrice">{{sharedService.currency}}{{p.salePrice}}</span>
+          <span class="price-orig" [class.crossed]="p.salePrice">{{sharedService.currency}}{{p.price}}</span>
+        </div>
+        <div class="prod-stars" *ngIf="p.reviewCount > 0">
+          <span *ngFor="let s of [1,2,3,4,5]" class="star" [class.on]="s <= p.avgRating">★</span>
+          <span class="star-count">({{p.reviewCount}})</span>
+        </div>
+        <div class="prod-swatches" *ngIf="p.variants?.length">
+          <ng-container *ngFor="let v of p.variants">
+            <ng-container *ngIf="v.name?.toLowerCase()==='colour'||v.name?.toLowerCase()==='color'">
+              <span class="swatch" *ngFor="let o of v.options.slice(0,4)" [style.background]="o.value" [title]="o.label"></span>
+              <span class="swatch-more" *ngIf="v.options.length>4">+{{v.options.length-4}}</span>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ── Load More ── -->
+  <div class="load-more-section" *ngIf="!isInitialLoad && products.length > 0">
+
+    <!-- Progress bar -->
+    <div class="load-more-progress">
+      <div class="load-more-bar">
+        <div class="load-more-bar-fill" [style.width]="(products.length / totalCount * 100) + '%'"></div>
+      </div>
+      <span class="load-more-count">
+        You've viewed <strong>{{products.length}}</strong> of <strong>{{totalCount}}</strong> products
+      </span>
+    </div>
+
+    <!-- Button -->
+    <button class="load-more-btn" *ngIf="hasMore" (click)="loadMore()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">LOAD MORE</span>
+      <span *ngIf="isLoading" class="load-more-spinner"></span>
+    </button>
+
+    <!-- All loaded -->
+    <p class="load-more-done" *ngIf="!hasMore">
+      You've seen all {{totalCount}} products
+    </p>
+
+  </div>
+
+  <!-- No results -->
+  <div class="no-results" *ngIf="!isInitialLoad && products.length===0">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" width="56" height="56">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <p>No products found</p>
+    <button class="clear-all-btn" (click)="clearAllFilters()">Clear Filters</button>
+  </div>
+
+</div>

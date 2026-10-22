@@ -1,0 +1,168 @@
+$purple:  var(--primary);
+$black:   #1a1a1a;
+$grey:    #555;
+$border:  #e8e8e8;
+$font:    var(--font-body), "Outfit", sans-serif;
+
+// ─── Banner ───────────────────────────────────────────────────────────────────
+.faq-banner {
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f0eaf8 0%, #e8d5f5 100%);
+}
+
+.faq-banner-img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  display: block;
+
+  @media (max-width: 768px) { max-height: 200px; }
+}
+
+.faq-banner-default {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 48px 48px;
+  min-height: 200px;
+
+  @media (max-width: 768px) { padding: 32px 20px; min-height: 140px; }
+}
+
+.faq-banner-text {
+  h1 {
+    font-family: $font;
+    font-size: 42px;
+    font-weight: 800;
+    color: $purple;
+    margin: 0 0 4px;
+    line-height: 1.1;
+    @media (max-width: 768px) { font-size: 28px; }
+  }
+  h2 {
+    font-family: $font;
+    font-size: 42px;
+    font-weight: 800;
+    color: $black;
+    margin: 0;
+    line-height: 1.1;
+    @media (max-width: 768px) { font-size: 28px; }
+  }
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+.faq-page {
+  background: #fff;
+  padding: 40px 0 60px;
+}
+
+.faq-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @media (max-width: 768px) { padding: 0 16px; }
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sk-heading {
+  height: 22px;
+  width: 180px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0eaf8 25%, #f8f4fc 50%, #f0eaf8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 16px;
+}
+
+.sk-item {
+  height: 52px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f5f5f5 25%, #fafafa 50%, #f5f5f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 10px;
+}
+
+.sk-topic { margin-bottom: 32px; }
+
+// ─── Topics ───────────────────────────────────────────────────────────────────
+.faq-topics { display: flex; flex-direction: column; gap: 32px; }
+
+.faq-topic-heading {
+  font-family: $font;
+  font-size: 18px;
+  font-weight: 700;
+  color: $black;
+  margin: 0 0 14px;
+}
+
+// ─── FAQ List ─────────────────────────────────────────────────────────────────
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-item {
+  border: 1px solid $border;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: 0 2px 8px rgba(92,15,139,0.08); }
+}
+
+.faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: $font;
+  font-size: 14px;
+  font-weight: 600;
+  color: $black;
+  text-align: left;
+  gap: 12px;
+  line-height: 1.4;
+
+  @media (max-width: 768px) { font-size: 13px; padding: 14px 14px; }
+}
+
+.faq-chevron {
+  stroke: #999;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  &.open { transform: rotate(180deg); stroke: $purple; }
+}
+
+.faq-a {
+  padding: 0 18px 16px;
+  font-family: $font;
+  font-size: 13px;
+  color: $grey;
+  line-height: 1.7;
+  border-top: 1px solid $border;
+  padding-top: 12px;
+
+  @media (max-width: 768px) { padding: 10px 14px 14px; font-size: 12px; }
+}
+
+// ─── Empty ────────────────────────────────────────────────────────────────────
+.faq-empty {
+  text-align: center;
+  padding: 48px 0;
+  font-family: $font;
+  font-size: 14px;
+  color: #999;
+}

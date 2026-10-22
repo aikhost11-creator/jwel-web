@@ -1,0 +1,81 @@
+html {
+    // ---------------- Site
+    --primary: #1c1410;
+    --primary-dark: #000000;
+    --primary-bg: #f6f1e8;
+    --accent: #c4a265;
+    --page-bg: #faf7f2;
+    --font-heading: "Cormorant Garamond", serif;
+    --font-body: "Outfit", sans-serif;
+    --secondary: #111827;
+    --primary-light: #eaf2ff;
+    --primary-extra-light: #eef4ff;
+
+    // ---------------- Buttons
+    --light-btn-bg: #ffffff40;
+    --dark-btn-bg: #11182714;
+
+    // ---------------- text
+    --heading-font: #0f172a;
+    --normal-font: #475569;
+
+    // ---------------- border
+    --dark-border: #d1d5db;
+    --light-border: #e5e7eb;
+
+    // ---------------- background
+    --sidebar-bg: #f3f4f6;
+    --layout-bg: #f8fafc;
+    --sidebar-open-bg: #111827;
+    --skeleton-bg: #f3f4f6;
+
+    // ---------------- Status
+    --yellow-bg: #ffeb78;
+    --yellow-color: #b59805;
+    --green-bg: #d0ffd9;
+    --green-color: #206b57;
+    --red-bg: #ffbfc4;
+    --red-color: #c70a24;
+    --blue-bg: #d5ebff;
+    --blue-color: #2196f3;
+
+    // ---------------- colors
+    --white: #fff;
+    --black: #000;
+}
+
+/* Dark theme overrides */
+html[data-theme="dark"] {
+    --primary: #000000;
+    --primary-dark: #000000;
+    --primary-bg: #1e0a2e;
+    --secondary: #111827;
+    --primary-light: #0b0b0d;
+    --primary-extra-light: #121216;
+
+    --light-btn-bg: #ffffff20;
+    --dark-btn-bg: #ffffff10;
+
+    --heading-font: #f3f4f6;
+    --normal-font: #b6bcc8;
+
+    --dark-border: #1b1c21;
+    --light-border: #272932;
+
+    --sidebar-bg: #111113;
+    --layout-bg: #0b0b0d;
+    --sidebar-open-bg: #141417;
+    --skeleton-bg: #141417;
+
+    --yellow-bg: #1a1406;
+    --yellow-color: #fbbf24;
+    --green-bg: #081a12;
+    --green-color: #34d399;
+    --red-bg: #1d0a0e;
+    --red-color: #fb7185;
+    --blue-bg: #0b131d;
+    --blue-color: #60a5fa;
+
+    --white: #111113;
+    --black: #f3f4f6;
+}

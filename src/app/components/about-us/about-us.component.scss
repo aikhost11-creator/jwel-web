@@ -1,0 +1,257 @@
+$font:   var(--font-body), "Outfit", sans-serif;
+$black:  #1a1a1a;
+$grey:   #555;
+$border: #e8e8e8;
+
+// ── Shared ────────────────────────────────────────────────────────────────────
+.au-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+    @media (max-width: 768px) { padding: 0 16px; }
+}
+
+.au-section-tag {
+    font-family: $font;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 8px;
+    &.au-center { text-align: center; }
+}
+
+.au-section-title {
+    font-family: $font;
+    font-size: 28px;
+    font-weight: 800;
+    color: $black;
+    margin: 0 0 32px;
+    line-height: 1.2;
+    &.au-center { text-align: center; }
+    @media (max-width: 768px) { font-size: 22px; }
+}
+
+// ── Banner ────────────────────────────────────────────────────────────────────
+.au-banner {
+    width: 100%;
+    min-height: 260px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @media (max-width: 768px) { min-height: 180px; }
+}
+
+.au-banner-content {
+    text-align: center;
+    padding: 40px 24px;
+}
+
+.au-banner-title {
+    font-family: $font;
+    font-size: 48px;
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 10px;
+    letter-spacing: -1px;
+    @media (max-width: 768px) { font-size: 32px; }
+}
+
+.au-banner-tagline {
+    font-family: $font;
+    font-size: 16px;
+    color: rgba(255,255,255,0.85);
+    margin: 0;
+    @media (max-width: 768px) { font-size: 14px; }
+}
+
+// ── Intro ─────────────────────────────────────────────────────────────────────
+.au-intro-section {
+    padding: 60px 0;
+    background: #fff;
+    border-bottom: 1px solid $border;
+}
+
+.au-intro-text {
+    font-family: $font;
+    font-size: 16px;
+    color: $grey;
+    line-height: 1.85;
+    margin: 0 0 16px;
+    max-width: 820px;
+    &:last-child { margin: 0; }
+    strong { color: $black; font-weight: 700; }
+    @media (max-width: 768px) { font-size: 14px; }
+}
+
+// ── Focus / Values ────────────────────────────────────────────────────────────
+.au-focus-section {
+    padding: 64px 0;
+    background: #fafafa;
+    border-bottom: 1px solid $border;
+}
+
+.au-values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.au-value-card {
+    background: #fff;
+    border: 1.5px solid $border;
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: box-shadow 0.2s, transform 0.2s;
+    &:hover {
+        box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+        transform: translateY(-3px);
+    }
+}
+
+.au-value-icon {
+    font-size: 34px;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.au-value-title {
+    font-family: $font;
+    font-size: 15px;
+    font-weight: 700;
+    color: $black;
+    margin: 0 0 8px;
+}
+
+.au-value-text {
+    font-family: $font;
+    font-size: 13px;
+    color: $grey;
+    line-height: 1.6;
+    margin: 0;
+}
+
+// ── Why Choose Us ─────────────────────────────────────────────────────────────
+.au-why-section {
+    padding: 64px 0;
+    background: #fff;
+    border-bottom: 1px solid $border;
+}
+
+.au-why-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+
+    li {
+        font-family: $font;
+        font-size: 15px;
+        color: $black;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+    }
+}
+
+.au-why-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+}
+
+.au-why-closing {
+    font-family: $font;
+    font-size: 15px;
+    color: $grey;
+    margin: 0;
+    font-style: italic;
+}
+
+// ── Vision & Mission ──────────────────────────────────────────────────────────
+.au-vm-section {
+    padding: 64px 0 80px;
+    background: var(--primary-bg, #f5f0ff);
+    @media (max-width: 768px) { padding: 40px 0 56px; }
+}
+
+.au-vm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.au-vm-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.au-vm-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--primary-bg, #f5f0ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg { stroke: var(--primary); }
+}
+
+.au-vm-title {
+    font-family: $font;
+    font-size: 22px;
+    font-weight: 800;
+    color: $black;
+    margin: 0;
+}
+
+.au-vm-text {
+    font-family: $font;
+    font-size: 14px;
+    color: $grey;
+    line-height: 1.75;
+    margin: 0;
+}
+
+.au-vm-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    li {
+        font-family: $font;
+        font-size: 14px;
+        color: $black;
+        padding-left: 18px;
+        position: relative;
+        line-height: 1.5;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 7px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+    }
+}

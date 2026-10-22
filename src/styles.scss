@@ -1,0 +1,58 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import 'ngx-toastr/toastr';
+
+body {
+    background-color: var(--page-bg, #faf7f2);
+    color: var(--normal-font, #6b5e52);
+    font-family: var(--font-body), "Outfit", sans-serif;
+}
+
+h1, h2, h3,
+.featured-title,
+.fp-name,
+.shop-title,
+.pdp-name,
+.ft-newsletter-title,
+.cat-copy strong {
+    font-family: var(--font-heading), "Cormorant Garamond", serif;
+}
+
+.subcat-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 28px 22px;
+}
+
+.subcat-chip {
+    border: 1px solid color-mix(in srgb, var(--accent, #c4a265) 70%, #fff);
+    color: var(--heading-font, #1c1410);
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.fp-buy-btn,
+.pdp-buy-btn,
+.qc-pay-btn {
+    background: var(--primary, #1c1410) !important;
+    border-radius: 2px !important;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.fp-buy-btn:hover,
+.pdp-buy-btn:hover,
+.qc-pay-btn:hover {
+    background: var(--secondary, #3d2b1f) !important;
+}
+
+:disabled {
+    opacity: 0.5 !important;
+}

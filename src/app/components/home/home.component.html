@@ -1,0 +1,253 @@
+<section class="home-slider-section">
+    @if (bannersLoading) {
+        <div class="slider-skeleton"></div>
+    } @else if (visibleBanners.length) {
+        <div class="slider-wrapper">
+            <div class="slider-track">
+                @for (banner of visibleBanners; track banner.id; let i = $index) {
+                    <div class="slide" [class.active]="slideIndex === i" [class.has-link]="banner.redirectionUrl" (click)="openBanner(banner)">
+                        @if (banner.type === 'video') {
+                            <video class="slide-media slide-video" [src]="banner.url" autoplay muted loop playsinline></video>
+                        } @else {
+                            <img class="slide-media slide-image" [src]="banner.url" [alt]="siteName + ' banner'" />
+                        }
+                    </div>
+                }
+            </div>
+            @if (visibleBanners.length > 1) {
+                <button class="slider-arrow prev" type="button" (click)="stepSlide(-1, $event)" aria-label="Previous banner">‹</button>
+                <button class="slider-arrow next" type="button" (click)="stepSlide(1, $event)" aria-label="Next banner">›</button>
+                <div class="slider-dots">
+                    @for (banner of visibleBanners; track banner.id; let i = $index) {
+                        <button class="dot" type="button" [class.active]="slideIndex === i" (click)="goSlide(i, $event)"></button>
+                    }
+                </div>
+            }
+        </div>
+    } @else {
+        <div class="jewel-hero">
+            <div class="jewel-hero-inner">
+                <span class="jewel-kicker">Maison</span>
+                <h1>{{ siteName }}</h1>
+                <p>{{ tagline }}</p>
+                <a routerLink="/shop" class="jewel-hero-btn">Explore the collection</a>
+            </div>
+        </div>
+    }
+</section>
+
+<section class="jewel-trust">
+    <div class="jewel-trust-item"><span>✦</span> Hallmarked metals</div>
+    <div class="jewel-trust-item"><span>✦</span> Certified stones</div>
+    <div class="jewel-trust-item"><span>✦</span> Quick checkout</div>
+    <div class="jewel-trust-item"><span>✦</span> Easy returns</div>
+</section>
+
+@if (rootCategories.length) {
+<section class="jewel-cats">
+    <div class="jewel-head">
+        <span class="jewel-kicker">Collections</span>
+        <h2>Shop by category</h2>
+    </div>
+    <div class="cat-grid">
+        @for (cat of rootCategories; track cat.id) {
+            <a class="cat-card" [routerLink]="['/category', cat.id]">
+                <div class="cat-visual" [class.has-photo]="!!cat.image">
+                    @if (cat.image) {
+                        <img [src]="cat.image" [alt]="cat.name" />
+                    } @else {
+                        <span>{{ cat.name.slice(0, 1) }}</span>
+                    }
+                </div>
+                <div class="cat-copy">
+                    <strong>{{ cat.name }}</strong>
+                    <em>View pieces</em>
+                </div>
+            </a>
+        }
+    </div>
+</section>
+}
+
+<section class="featured-section">
+    <div class="featured-inner">
+        <div class="featured-heading">
+            <span class="jewel-kicker">The edit</span>
+            <h2 class="featured-title">Our collection</h2>
+            <p class="featured-sub">Pieces finished to be worn, gifted, and kept.</p>
+        </div>
+
+        @if (productsLoading) {
+        <div class="featured-list">
+            <div class="featured-card" *ngFor="let s of [1,2]" style="pointer-events:none">
+                <div class="fp-gallery-col">
+                    <div class="fp-thumbs-col">
+                        <div class="fp-thumb sk-block" *ngFor="let t of [1,2,3,4]"></div>
+                    </div>
+                    <div class="fp-main-img-wrap sk-block"></div>
+                </div>
+                <div class="fp-info-col">
+                    <div class="sk-line w50"></div>
+                    <div class="sk-line w80 mt-2"></div>
+                    <div class="sk-line w60 mt-1"></div>
+                    <div class="sk-line w40 mt-2"></div>
+                    <div class="sk-line w30 mt-1"></div>
+                </div>
+            </div>
+        </div>
+        }
+
+        @if (!productsLoading) {
+        <div class="featured-list">
+            @for (p of products; track p.id) {
+            <div class="featured-card">
+                <div class="fp-gallery-col">
+                    <div class="fp-thumbs-col">
+                        @for (img of p.images; track img; let ti = $index) {
+                        <div class="fp-thumb" [class.active]="(activeImg[p.id] ?? 0) === ti" (click)="setActiveImg(p.id, ti)">
+                            <img [src]="img" [alt]="p.name" loading="lazy" />
+                        </div>
+                        }
+                    </div>
+                    <div class="fp-main-img-wrap" (click)="goToProduct(p.slug)">
+                        @if (p.images && p.images.length > 0) {
+                        <img [src]="p.images[activeImg[p.id] ?? 0]" [alt]="p.name" loading="lazy" />
+                        } @else {
+                        <div class="fp-img-ph">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="fp-info-col">
+                    <span class="fp-kicker" *ngIf="p.categoryName || p.resultTag">{{ p.resultTag || p.categoryName }}</span>
+                    <h3 class="fp-name" (click)="goToProduct(p.slug)">{{ p.name }}</h3>
+                    <p class="fp-lead" *ngIf="p.shortDescription">{{ p.shortDescription }}</p>
+
+                    @if (p.avgRating > 0) {
+                    <div class="fp-rating-row">
+                        <span class="fp-stars">
+                            @for (s of getStars(p.avgRating); track $index) {
+                            <svg viewBox="0 0 20 20" [class.filled]="s==='full'" [class.half]="s==='half'" width="15" height="15">
+                                <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.44.91-5.32L2.27 6.62l5.34-.78z"/>
+                            </svg>
+                            }
+                        </span>
+                        <span class="fp-rating-num">{{ p.avgRating | number:'1.1-1' }}</span>
+                        @if (p.reviewCount > 0) {
+                        <a class="fp-review-link" (click)="goToProduct(p.slug)">({{ p.reviewCount }} reviews)</a>
+                        }
+                    </div>
+                    }
+
+                    @if (p.benefits && p.benefits.length > 0) {
+                    <div class="fp-chips">
+                        @for (b of p.benefits.slice(0,4); track b) {
+                        <span class="fp-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>
+                            {{ b }}
+                        </span>
+                        }
+                    </div>
+                    }
+
+                    <div class="fp-price-block">
+                        @if (p.salePrice && p.salePrice < p.price) {
+                        <span class="fp-price-orig">{{ sharedservice.currency }}{{ p.price }}</span>
+                        <span class="fp-price-sale">{{ sharedservice.currency }}{{ p.salePrice }}</span>
+                        <span class="fp-discount">-{{ getDiscount(p.price, p.salePrice) }}%</span>
+                        } @else {
+                        <span class="fp-price-sale">{{ sharedservice.currency }}{{ p.price }}</span>
+                        }
+                        <span class="fp-tax-note">Incl. of all taxes</span>
+                    </div>
+
+                    @if (p.variants && p.variants.length > 0) {
+                    @for (v of p.variants; track v.name; let vi = $index) {
+                    <div class="fp-variants-block">
+                        <div class="fp-variant-label">{{ v.name | uppercase }}</div>
+                        <div class="fp-variant-options">
+                            @for (opt of v.options; track opt.label; let oi = $index) {
+                            <button class="fp-vbtn" [class.selected]="(selectedVariant[p.id]?.[vi] ?? 0) === oi" (click)="selectVariant(p.id, vi, oi)">
+                                <span class="fp-vbtn-label">{{ opt.label }}</span>
+                                @if (opt.price) {
+                                <span class="fp-vbtn-price">{{ sharedservice.currency }}{{ opt.salePrice || opt.price }}</span>
+                                @if (opt.salePrice && opt.salePrice < opt.price) {
+                                <span class="fp-vbtn-orig">{{ sharedservice.currency }}{{ opt.price }}</span>
+                                }
+                                }
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    }
+                    }
+
+                    <div class="fp-qty-block">
+                        <div class="fp-qty-label">QUANTITY</div>
+                        <div class="fp-qty-ctrl">
+                            <button class="fp-qty-btn" (click)="qtyChange(p.id, -1)" [disabled]="(qty[p.id] ?? 1) <= 1">−</button>
+                            <span class="fp-qty-val">{{ qty[p.id] ?? 1 }}</span>
+                            <button class="fp-qty-btn" (click)="qtyChange(p.id, 1)">+</button>
+                        </div>
+                    </div>
+
+                    <div class="fp-cta-btns">
+                        <button class="fp-buy-btn" (click)="buyNow($event, p, qty[p.id] ?? 1, getSelectedOptions(p))">
+                            {{ sharedservice.siteConfig?.buyNowText || 'Buy Now' }}
+                            <span class="buy-subtext" *ngIf="sharedservice.siteConfig?.buyNowSubtext">{{ sharedservice.siteConfig.buyNowSubtext }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            }
+
+            @if (products.length === 0) {
+            <p class="fp-empty">The collection is being prepared.</p>
+            }
+        </div>
+        }
+    </div>
+</section>
+
+@if (reels.length) {
+<section class="reels-section">
+    <div class="jewel-head">
+        <span class="jewel-kicker">Atelier</span>
+        <h2>On reel</h2>
+    </div>
+    <div class="reels-swiper">
+        <button class="reels-nav prev" type="button" (click)="scrollReels(-1)" aria-label="Previous reel">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="reels-row" #reelsTrack>
+            @for (reel of reels; track reel.id) {
+                <button class="reel-card" type="button" (click)="openReel(reel)">
+                    <video [src]="reel.videoUrl" [poster]="reel.thumbnail || ''" muted loop playsinline
+                        (mouseenter)="previewReel($event, true)" (mouseleave)="previewReel($event, false)"></video>
+                    <i class="reel-play" aria-hidden="true"></i>
+                    <span>{{ reel.title || 'Watch' }}</span>
+                </button>
+            }
+        </div>
+        <button class="reels-nav next" type="button" (click)="scrollReels(1)" aria-label="Next reel">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
+</section>
+}
+
+@if (activeReel) {
+<div class="reel-modal" (click)="closeReel()">
+    <div class="reel-modal-card" (click)="$event.stopPropagation()">
+        <button type="button" class="reel-close" (click)="closeReel()" aria-label="Close">×</button>
+        <video [src]="activeReel.videoUrl" [poster]="activeReel.thumbnail || ''" controls autoplay playsinline></video>
+        <p>{{ activeReel.title }}</p>
+    </div>
+</div>
+}

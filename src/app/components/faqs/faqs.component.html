@@ -1,0 +1,53 @@
+<!-- ── BANNER ── -->
+<section class="faq-banner" *ngIf="config?.bannerImage">
+  <img [src]="config.bannerImage" [alt]="config?.pageTitle || 'FAQs'" class="faq-banner-img" />
+</section>
+
+<section class="faq-banner faq-banner-default" *ngIf="!config?.bannerImage">
+  <div class="faq-banner-text">
+    <h1>Questions?</h1>
+    <h2>We're Already Ready.</h2>
+  </div>
+</section>
+
+<!-- ── CONTENT ── -->
+<div class="faq-page">
+  <div class="faq-inner">
+
+    <!-- Skeleton -->
+    <div class="faq-skeleton" *ngIf="isLoading">
+      <div class="sk-topic" *ngFor="let s of [1,2,3]">
+        <div class="sk-heading"></div>
+        <div class="sk-item" *ngFor="let x of [1,2,3,4]"></div>
+      </div>
+    </div>
+
+    <!-- Topics -->
+    <div class="faq-topics" *ngIf="!isLoading">
+      <div class="faq-topic" *ngFor="let topic of topics">
+        <h2 class="faq-topic-heading">{{ topic.name }}</h2>
+        <div class="faq-list">
+          <div class="faq-item" *ngFor="let faq of topic.faqs">
+            <button class="faq-q" (click)="toggle('t' + topic.id + 'f' + faq.id)">
+              <span>{{ faq.question }}</span>
+              <svg class="faq-chevron" [class.open]="isOpen('t' + topic.id + 'f' + faq.id)"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <div class="faq-a" *ngIf="isOpen('t' + topic.id + 'f' + faq.id)">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div class="faq-empty" *ngIf="topics.length === 0">
+        <p>No FAQs available yet.</p>
+      </div>
+    </div>
+
+  </div>
+</div>

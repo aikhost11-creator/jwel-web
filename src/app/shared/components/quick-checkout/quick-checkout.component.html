@@ -1,0 +1,343 @@
+@if(isOpen) {
+
+<div class="qc-backdrop" (click)="close()"></div>
+
+<div class="qc-panel" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="qc-header">
+        <div class="qc-header-left">
+            @if(step === 'payment') {
+            <button class="qc-back-btn" (click)="goBackToForm()" aria-label="Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            }
+            <span class="qc-header-title">
+                {{ step === 'form' ? 'Quick Checkout' : 'Choose Payment' }}
+            </span>
+        </div>
+        <button class="qc-close" (click)="close()" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Body -->
+    <div class="qc-body">
+
+        <!-- Product summary (always visible) -->
+        <div class="qc-product-row">
+            <div class="qc-product-img">
+                @if(product?.images?.[0]) {
+                <img [src]="product.images[0]" [alt]="product.name" />
+                }
+            </div>
+            <div class="qc-product-info">
+                <div class="qc-product-name">{{ product?.name }}</div>
+                @if(getOptionEntries(selectedOptions).length > 0) {
+                <div class="qc-product-opts">
+                    @for(opt of getOptionEntries(selectedOptions); track opt.key) {
+                    <span>{{ opt.value }}</span>
+                    }
+                </div>
+                }
+                <div class="qc-price-row">
+                    @if(product?.salePrice && product.salePrice < product.price) {
+                    <span class="qc-price-orig">{{ currency }}{{ product.price }}</span>
+                    }
+                    <span class="qc-price-sale">{{ currency }}{{ product?.salePrice || product?.price }}</span>
+                </div>
+            </div>
+            <div class="qc-qty">
+                <button class="qc-qty-btn" (click)="changeQty(-1)" [disabled]="qty <= 1">−</button>
+                <span class="qc-qty-val">{{ qty }}</span>
+                <button class="qc-qty-btn" (click)="changeQty(1)">+</button>
+            </div>
+        </div>
+
+        <div class="qc-sep"></div>
+
+        <!-- ══ STEP 1: FORM ══ -->
+        @if(step === 'form') {
+        <div class="qc-form">
+
+            <!-- Sale ends urgency banner -->
+            <div class="qc-sale-banner">
+                <span class="qc-sale-fire">🔥</span>
+                <span class="qc-sale-text">Hurry! Sale ends in</span>
+                <span class="qc-sale-timer">{{ saleTimeLeft }}</span>
+            </div>
+
+            <!-- First Name + Last Name -->
+            <div class="qc-row-2">
+                <div class="qc-field" [class.err]="errors['firstName']">
+                    <label class="qc-label">First Name <sup>*</sup></label>
+                    <input type="text" placeholder="First Name" [(ngModel)]="firstName"
+                        (ngModelChange)="onFormChange()" (blur)="validate()" autocomplete="given-name" />
+                    @if(errors['firstName']) {
+                    <span class="qc-err-msg">{{ errors['firstName'] }}</span>
+                    }
+                </div>
+                <div class="qc-field" [class.err]="errors['lastName']">
+                    <label class="qc-label">Last Name <sup>*</sup></label>
+                    <input type="text" placeholder="Last Name" [(ngModel)]="lastName"
+                        (ngModelChange)="onFormChange()" (blur)="validate()" autocomplete="family-name" />
+                    @if(errors['lastName']) {
+                    <span class="qc-err-msg">{{ errors['lastName'] }}</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Mobile -->
+            <div class="qc-field" [class.err]="errors['phone']">
+                <label class="qc-label">Active Mobile Number <sup>*</sup></label>
+                <div class="qc-phone-wrap">
+                    <span class="qc-phone-prefix">+91</span>
+                    <input type="tel" placeholder="Enter 10 Digit Mobile Number" [(ngModel)]="phone"
+                        (ngModelChange)="onPhoneInput()" (blur)="validate()"
+                        autocomplete="tel" maxlength="10" inputmode="numeric" />
+                </div>
+                @if(errors['phone']) {
+                <span class="qc-err-msg">{{ errors['phone'] }}</span>
+                }
+            </div>
+
+            <!-- Complete Full Address -->
+            <div class="qc-field" [class.err]="errors['address']">
+                <label class="qc-label">Complete Full Address <sup>*</sup></label>
+                <input type="text" placeholder="House No. / Building Name / Street / Area" [(ngModel)]="address"
+                    (ngModelChange)="onFormChange()" (blur)="validate()" autocomplete="street-address" />
+                @if(errors['address']) {
+                <span class="qc-err-msg">{{ errors['address'] }}</span>
+                }
+            </div>
+
+            <!-- Landmark -->
+            <div class="qc-field">
+                <label class="qc-label">Landmark</label>
+                <input type="text" placeholder="Nearby school, hospital, shop ..." [(ngModel)]="landmark"
+                    (ngModelChange)="onFormChange()" autocomplete="off" />
+                @if(errors['landmark']) {
+                <span class="qc-err-msg">{{ errors['landmark'] }}</span>
+                }
+            </div>
+
+            <!-- Pincode -->
+            <div class="qc-field" [class.err]="errors['postcode']">
+                <label class="qc-label">Pincode <sup>*</sup></label>
+                <input type="text" placeholder="Enter 6 digit pincode" [(ngModel)]="postcode"
+                    (ngModelChange)="onFormChange()" (blur)="validate()"
+                    autocomplete="postal-code" maxlength="6" inputmode="numeric" />
+                @if(errors['postcode']) {
+                <span class="qc-err-msg">{{ errors['postcode'] }}</span>
+                }
+            </div>
+
+            <!-- State + City -->
+            <div class="qc-row-2">
+                <div class="qc-field" [class.err]="errors['state']">
+                    <label class="qc-label">State <sup>*</sup></label>
+                    <select [(ngModel)]="state" (ngModelChange)="onFormChange()" (blur)="validate()">
+                        <option value="">Select State</option>
+                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Dadra and Nagar Haveli">Dadra and Nagar Haveli</option>
+                        <option value="Daman and Diu">Daman and Diu</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Lakshadweep">Lakshadweep</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Puducherry">Puducherry</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="West Bengal">West Bengal</option>
+                    </select>
+                    @if(errors['state']) {
+                    <span class="qc-err-msg">{{ errors['state'] }}</span>
+                    }
+                </div>
+                <div class="qc-field" [class.err]="errors['city']">
+                    <label class="qc-label">City <sup>*</sup></label>
+                    <input type="text" placeholder="Enter your city" [(ngModel)]="city"
+                        (ngModelChange)="onFormChange()" (blur)="validate()" autocomplete="address-level2" />
+                    @if(errors['city']) {
+                    <span class="qc-err-msg">{{ errors['city'] }}</span>
+                    }
+                </div>
+            </div>
+
+        </div>
+        }
+
+        <!-- ══ STEP 2: PAYMENT ══ -->
+        @if(step === 'payment') {
+
+        <!-- Address summary box -->
+        <div class="qc-summary-box">
+            <div class="qc-summary-head">
+                <div class="qc-summary-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <span class="qc-summary-label">Delivering to</span>
+                <button class="qc-edit-btn" (click)="goBackToForm()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                </button>
+            </div>
+            <div class="qc-summary-name">{{ fullName }} &nbsp;·&nbsp; {{ phone }}</div>
+            <div class="qc-summary-addr">
+                {{ address }}
+                @if(landmark) { , {{ landmark }} }
+            </div>
+            <div class="qc-summary-addr">{{ city }}, {{ state }} — {{ postcode }}</div>
+            <div class="qc-summary-email">{{ email }}</div>
+        </div>
+
+        <div class="qc-sep"></div>
+
+        <!-- Order total -->
+        <div class="qc-totals">
+            <div class="qc-total-row">
+                <span>Subtotal ({{ qty }} item{{ qty !== 1 ? 's' : '' }})</span>
+                <span>{{ currency }}{{ subtotal.toFixed(2) }}</span>
+            </div>
+            @if(deliveryCharge > 0) {
+            <div class="qc-total-row">
+                <span>Delivery</span>
+                <span>{{ currency }}{{ deliveryCharge.toFixed(2) }}</span>
+            </div>
+            }
+            <div class="qc-total-row qc-total-final">
+                <span>Total</span>
+                <span>{{ currency }}{{ total.toFixed(2) }}</span>
+            </div>
+        </div>
+
+        <div class="qc-sep"></div>
+
+        <!-- Payment methods -->
+        <div class="qc-pay-methods-title">Select Payment Method</div>
+        <div class="qc-pay-methods">
+            @if(razorpayActive) {
+            <button class="qc-pay-method-card" [class.selected]="selectedMethod === 'razorpay'"
+                (click)="selectedMethod = 'razorpay'">
+                <div class="qc-pmc-icon razorpay">
+                    <i class="fa-light fa-credit-card"></i>
+                </div>
+                <div class="qc-pmc-info">
+                    <span class="qc-pmc-name">Razorpay</span>
+                    <span class="qc-pmc-sub">Card / UPI / Net Banking</span>
+                </div>
+                <div class="qc-pmc-radio">
+                    <div class="qc-radio-dot"></div>
+                </div>
+            </button>
+            }
+            @if(phonePeActive) {
+            <button class="qc-pay-method-card" [class.selected]="selectedMethod === 'phonepe'"
+                (click)="selectedMethod = 'phonepe'">
+                <div class="qc-pmc-icon phonepe">
+                    <i class="fa-light fa-mobile-screen"></i>
+                </div>
+                <div class="qc-pmc-info">
+                    <span class="qc-pmc-name">PhonePe</span>
+                    <span class="qc-pmc-sub">UPI / Wallet</span>
+                </div>
+                <div class="qc-pmc-radio">
+                    <div class="qc-radio-dot"></div>
+                </div>
+            </button>
+            }
+            @if(codActive) {
+            <button class="qc-pay-method-card" [class.selected]="selectedMethod === 'cod'"
+                (click)="selectedMethod = 'cod'">
+                <div class="qc-pmc-icon cod">
+                    <i class="fa-light fa-money-bill-wave"></i>
+                </div>
+                <div class="qc-pmc-info">
+                    <span class="qc-pmc-name">Cash on Delivery</span>
+                    <span class="qc-pmc-sub">Pay when delivered</span>
+                </div>
+                <div class="qc-pmc-radio">
+                    <div class="qc-radio-dot"></div>
+                </div>
+            </button>
+            }
+        </div>
+
+        }
+
+    </div>
+
+    <!-- Footer -->
+    <div class="qc-footer">
+
+        @if(step === 'form') {
+        <button class="qc-pay-btn" (click)="proceedToPayment()" [disabled]="isProcessing">
+            Complete Order — {{ currency }}{{ total.toFixed(2) }}
+        </button>
+        }
+
+        @if(step === 'payment') {
+        <button class="qc-pay-btn" (click)="confirmPayment()" [disabled]="isProcessing || !selectedMethod">
+            @if(isProcessing) {
+            <span class="qc-spinner"></span> Processing...
+            } @else {
+            <i class="fa-light fa-lock"></i>
+            Pay {{ currency }}{{ total.toFixed(2) }}
+            @if(selectedMethod === 'cod') { — Cash on Delivery }
+            }
+        </button>
+        }
+
+        <p class="qc-secure">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            100% Secure Payment
+        </p>
+
+    </div>
+
+</div>
+
+}

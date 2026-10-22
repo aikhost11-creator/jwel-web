@@ -1,0 +1,148 @@
+<div class="os-page">
+
+    <!-- Loading -->
+    @if(loading) {
+    <div class="os-loading">
+        <div class="os-spinner"></div>
+    </div>
+    }
+
+    <!-- Success -->
+    @if(!loading && order) {
+    <div class="os-card">
+
+        <!-- Duplicate order banner -->
+        @if(isDuplicate) {
+        <div class="os-duplicate-banner">
+            <div class="os-duplicate-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <div class="os-duplicate-text">
+                <strong>Your order is already created!</strong>
+                <span>An order from this mobile number is already created. No new order was placed.</span>
+            </div>
+        </div>
+        }
+
+        <!-- Check / Warning icon -->
+        <div class="os-icon-wrap" [class.os-icon-warn]="isDuplicate">
+            <div class="os-icon-ring"></div>
+            @if(isDuplicate) {
+            <svg class="os-check" viewBox="0 0 52 52" fill="none">
+                <circle cx="26" cy="26" r="25" stroke="currentColor" stroke-width="2"/>
+                <line x1="26" y1="16" x2="26" y2="28" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="26" cy="36" r="1.5" fill="currentColor"/>
+            </svg>
+            } @else {
+            <svg class="os-check" viewBox="0 0 52 52" fill="none">
+                <circle cx="26" cy="26" r="25" stroke="currentColor" stroke-width="2"/>
+                <path class="os-check-path" d="M14 27l8 8 16-16"
+                    stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            }
+        </div>
+
+        <h1 class="os-title">@if(isDuplicate) { Order Already Placed! } @else { Thank You! }</h1>
+        <p class="os-subtitle">
+            @if(isDuplicate) {
+                Your order is already on the way 🚚
+            } @else {
+                Your order has been placed successfully.
+            }
+        </p>
+
+        <!-- Order number badge -->
+        <div class="os-order-badge">
+            <span class="os-order-label">Order</span>
+            <span class="os-order-num">{{ order.orderNumber }}</span>
+        </div>
+
+        <!-- Order details -->
+        <div class="os-details">
+
+            <!-- Items -->
+            @if(order._items?.length > 0) {
+            <div class="os-items">
+                @for(item of order._items; track item.id) {
+                <div class="os-item">
+                    <div class="os-item-img">
+                        @if(item.image) { <img [src]="item.image" [alt]="item.name" /> }
+                        @else { <div class="os-item-img-ph"></div> }
+                    </div>
+                    <div class="os-item-info">
+                        <div class="os-item-name">{{ item.name }}</div>
+                        @if(getOptionEntries(item.selectedOptions).length > 0) {
+                        <div class="os-item-opts">
+                            @for(opt of getOptionEntries(item.selectedOptions); track opt.key) {
+                            <span>{{ opt.key }}: {{ opt.value }}</span>
+                            }
+                        </div>
+                        }
+                        <div class="os-item-qty">Qty: {{ item.quantity }}</div>
+                    </div>
+                    <div class="os-item-price">
+                        {{ currency }}{{ ((item.salePrice ?? item.price) * item.quantity) | number:'1.2-2' }}
+                    </div>
+                </div>
+                }
+            </div>
+            }
+
+            <!-- Summary rows -->
+            <div class="os-summary">
+                @if(order._address) {
+                <div class="os-summary-row os-address-row">
+                    <span class="os-summary-label">Deliver to</span>
+                    <span class="os-summary-val os-address-val">
+                        {{ order._address.name || order.guestName }},
+                        {{ order._address.line1 }}
+                        @if(order._address.city) { , {{ order._address.city }} }
+                        @if(order._address.state) { , {{ order._address.state }} }
+                        @if(order._address.postcode) { — {{ order._address.postcode }} }
+                    </span>
+                </div>
+                }
+                <div class="os-summary-row">
+                    <span class="os-summary-label">Payment</span>
+                    <span class="os-summary-val">{{ order.paymentMethod | titlecase }}</span>
+                </div>
+                <div class="os-summary-row">
+                    <span class="os-summary-label">Status</span>
+                    <span class="os-status-chip">{{ order.status | titlecase }}</span>
+                </div>
+                <div class="os-summary-row os-total-row">
+                    <span class="os-summary-label">Total Paid</span>
+                    <span class="os-total-val">{{ currency }}{{ order.total | number:'1.2-2' }}</span>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="os-note">A confirmation has been sent to your email.</p>
+
+        <!-- Actions -->
+        <div class="os-actions">
+            <a routerLink="/shop" class="os-btn os-btn-primary">Continue Shopping</a>
+        </div>
+
+    </div>
+    }
+
+    <!-- Not found -->
+    @if(!loading && !order) {
+    <div class="os-card os-not-found">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h2>Order not found</h2>
+        <a routerLink="/" class="os-btn os-btn-primary">Go Home</a>
+    </div>
+    }
+
+</div>
