@@ -64,7 +64,13 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
     // Offer timer
     offerTimer = '';
+    saleClock = { d: '00', h: '00', m: '00', s: '00' };
     private timerInterval: any;
+
+    shareOpen = false;
+    linkCopied = false;
+    lightboxOpen = false;
+    related: any[] = [];
 
     // Promo Reel
     promoReelOpen = false;
@@ -171,7 +177,11 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         this.reviews = [];
         this.activeImageIdx = 0;
         this.selectedOptions = {};
-        this.accOpen = { desc: true };
+        this.accOpen = {};
+        this.shareOpen = false;
+        this.lightboxOpen = false;
+        this.addQty = 1;
+        this.related = [];
 
         this.productService.getProduct(slug).subscribe({
             next: (res: any) => {
@@ -210,6 +220,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.faqOpen = new Array(d.faqs?.length || 0).fill(false);
 
                 this.loadReviews();
+                this.loadRelated();
                 this.setupBuyBtnObserver();
             },
             error: () => { this.notFound = true; this.isLoading = false; }
@@ -225,12 +236,12 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     // ── Gallery ───────────────────────────────────────────────────────────────
     setActiveImage(i: number) { this.activeImageIdx = i; }
     prevImage() {
-        const t = this.product?.images?.length || 0;
+        const t = this.slides.length;
         if (!t) return;
         this.activeImageIdx = (this.activeImageIdx - 1 + t) % t;
     }
     nextImage() {
-        const t = this.product?.images?.length || 0;
+        const t = this.slides.length;
         if (!t) return;
         this.activeImageIdx = (this.activeImageIdx + 1) % t;
     }
@@ -305,6 +316,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
     @HostListener('document:keydown.escape')
     onEsc() {
+        if (this.lightboxOpen) { this.closeLightbox(); return; }
         if (this.sizeGuideOpen) { this.closeSizeGuide(); return; }
         if (this.promoReelOpen) { this.closePromoReel(); return; }
         this.closeCartPanel();
@@ -379,7 +391,137 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     formatDate(dateStr: string): string {
         if (!dateStr) return '';
         const d = new Date(dateStr);
-        return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    get slides(): Array<{ type: 'image' | 'video'; url: string; poster?: string }> {
+        if (!this.product) return [];
+        const out: Array<{ type: 'image' | 'video'; url: string; poster?: string }> = [];
+        for (const img of this.product.images || []) {
+            if (img) out.push({ type: 'image', url: img });
+        }
+        for (const media of this.product.galleryMedia || []) {
+            if (!media?.url) continue;
+            if (media.type === 'video') out.push({ type: 'video', url: media.url, poster: media.thumbnail || '' });
+            else if (!out.some(slide => slide.url === media.url)) out.push({ type: 'image', url: media.url });
+        }
+        return out;
+    }
+
+    get activeSlide() {
+        return this.slides[this.activeImageIdx] || null;
+    }
+
+    get orderedVariants(): any[] {
+        const list = this.product?.variants || [];
+        const rank = (name: string) => this.isColorVariant(name) ? 0 : this.isSizeVariant(name) ? 1 : 2;
+        return [...list].sort((a, b) => rank(a.name) - rank(b.name));
+    }
+
+    get specRows(): Array<{ title: string; text: string }> {
+        const product = this.product;
+        if (!product) return [];
+        if (product.keyIngredients?.length) return this.asRows(product.keyIngredients);
+        if (product.benefits?.length) return this.asRows(product.benefits);
+        return [];
+    }
+
+    get careRows(): Array<{ title: string; text: string }> {
+        const items = this.product?.whyLoveIt || [];
+        if (!items.length) return [];
+        if (JSON.stringify(items) === JSON.stringify(this.product?.benefits || [])) return [];
+        return this.asRows(items);
+    }
+
+    get hasComparePrice(): boolean {
+        const sale = Number(this.product?.salePrice);
+        const price = Number(this.product?.price);
+        return Number.isFinite(sale) && sale > 0 && sale < price;
+    }
+
+    get currentPrice(): number {
+        return this.hasComparePrice ? Number(this.product.salePrice) : Number(this.product?.price);
+    }
+
+    isColorVariant(name: string): boolean {
+        return /colou?r|metal|finish/i.test(name || '');
+    }
+
+    isSizeVariant(name: string): boolean {
+        return /size/i.test(name || '');
+    }
+
+    swatchBackground(opt: any): string {
+        const value = String(opt?.value || '').trim();
+        if (/^(#|rgb|hsl)/i.test(value)) return value;
+        const key = String(opt?.label || '').toLowerCase();
+        const map: Record<string, string> = {
+            gold: '#d4af37', 'yellow gold': '#e1c16e', 'rose gold': '#b76e79',
+            'white gold': '#eceae6', silver: '#c0c0c0', platinum: '#e5e4e2',
+            black: '#111111', white: '#f4f4f4', red: '#b42318', blue: '#1d4e89',
+            navy: '#1b2a4a', green: '#1f6b3a', pink: '#e7a3b5', brown: '#6b4423',
+            beige: '#d8c3a5'
+        };
+        return map[key] || '#d9d9d9';
+    }
+
+    money(value: any): string {
+        const amount = Number(value);
+        if (!Number.isFinite(amount)) return '';
+        const currency = this.sharedService.currency || '₹';
+        return currency + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    cardImage(item: any): string {
+        return this.parseArr(item?.images)[0] || '';
+    }
+
+    private asRows(list: any[]): Array<{ title: string; text: string }> {
+        return (list || []).map(item => {
+            if (typeof item === 'string') return { title: item, text: '' };
+            return {
+                title: item?.name || item?.title || '',
+                text: item?.description || item?.text || ''
+            };
+        }).filter(row => row.title || row.text);
+    }
+
+    private loadRelated() {
+        if (!this.product?.categoryId || !this.product?.id) return;
+        this.productService.getRelated(this.product.categoryId, this.product.id, 8)
+            .pipe(catchError(() => of({ data: [] })))
+            .subscribe((res: any) => { this.related = res?.data || []; });
+    }
+
+    toggleShare() { this.shareOpen = !this.shareOpen; }
+
+    copyLink() {
+        const url = window.location.href;
+        navigator.clipboard?.writeText(url).then(() => {
+            this.linkCopied = true;
+            setTimeout(() => { this.linkCopied = false; }, 1400);
+        }).catch(() => {});
+    }
+
+    shareTo(network: 'facebook' | 'twitter' | 'pinterest') {
+        const url = encodeURIComponent(window.location.href);
+        const links = {
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+            twitter: `https://twitter.com/intent/tweet?url=${url}`,
+            pinterest: `https://pinterest.com/pin/create/button/?url=${url}`
+        };
+        window.open(links[network], '_blank', 'noopener,width=640,height=520');
+    }
+
+    openLightbox() {
+        if (this.activeSlide?.type !== 'image') return;
+        this.lightboxOpen = true;
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeLightbox() {
+        this.lightboxOpen = false;
+        if (!this.cartPanelOpen && !this.sizeGuideOpen && !this.activeReel) document.body.style.overflow = '';
     }
 
     // ── Reel play/pause on hover ──────────────────────────────────────────────
@@ -444,14 +586,17 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
     // ── Offer timer ───────────────────────────────────────────────────────────
     startOfferTimer() {
-        // Fake countdown — 37 min from now
-        let secs = 37 * 60 + 26;
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+        const pad = (n: number) => String(n).padStart(2, '0');
         const tick = () => {
-            if (secs <= 0) { this.offerTimer = ''; return; }
-            const m = Math.floor(secs / 60);
-            const s = secs % 60;
-            this.offerTimer = `${m} min : ${String(s).padStart(2, '0')} sec`;
-            secs--;
+            const diff = Math.max(0, end.getTime() - Date.now());
+            this.saleClock = {
+                d: pad(Math.floor(diff / 86400000)),
+                h: pad(Math.floor((diff % 86400000) / 3600000)),
+                m: pad(Math.floor((diff % 3600000) / 60000)),
+                s: pad(Math.floor((diff % 60000) / 1000))
+            };
         };
         tick();
         this.timerInterval = setInterval(tick, 1000);

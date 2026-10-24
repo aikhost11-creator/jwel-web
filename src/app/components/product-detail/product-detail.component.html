@@ -1,499 +1,378 @@
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- LOADING SKELETON                                                       -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<div class="pdp-page" *ngIf="isLoading">
-  <div class="pdp-layout">
-    <div class="pdp-gallery-col">
-      <div class="pdp-thumbs-col">
-        <div class="sk-thumb" *ngFor="let s of [1,2,3,4]"></div>
-      </div>
-      <div class="sk-main-img"></div>
-    </div>
-    <div class="pdp-info-col">
-      <div class="sk-line w70 mb10"></div>
-      <div class="sk-line w40 mb16"></div>
-      <div class="sk-line w50 mb8"></div>
-      <div class="sk-line w30 mb24"></div>
-      <div class="sk-btn mb8"></div>
+<div class="pdp" *ngIf="isLoading">
+  <div class="pdp-grid">
+    <div class="sk-hero"></div>
+    <div>
+      <div class="sk-line w70"></div>
+      <div class="sk-line w40"></div>
+      <div class="sk-line w50"></div>
+      <div class="sk-btn"></div>
       <div class="sk-btn"></div>
     </div>
   </div>
 </div>
 
-<!-- NOT FOUND -->
-<div class="pdp-not-found" *ngIf="notFound && !isLoading">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56">
-    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-  </svg>
+<div class="pdp-empty" *ngIf="notFound && !isLoading">
   <h2>Product not found</h2>
-  <a routerLink="/shop" class="pdp-back-link">← Back to Shop</a>
+  <a routerLink="/shop">Back to shop</a>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- PRODUCT DETAIL                                                         -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<div class="pdp-page" *ngIf="product && !isLoading">
+<div class="pdp" *ngIf="product && !isLoading">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a routerLink="/">Home</a>
+    <span>{{ product.name }}</span>
+  </nav>
 
-  <!-- ── TOP SECTION: Gallery + Info ── -->
-  <div class="pdp-layout">
-
-    <!-- ════ GALLERY ════ -->
-    <div class="pdp-gallery-col">
-
-      <!-- Desktop: thumbnails left + main image -->
-      <div class="pdp-desktop-gallery">
-        <div class="pdp-thumbs-col">
-          <button class="pdp-thumb-arrow up" (click)="scrollThumbs(-1)" aria-label="Scroll up">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-              <polyline points="18 15 12 9 6 15"/>
-            </svg>
-          </button>
-          <div class="pdp-thumbs-track" #thumbsTrack>
-            <div class="pdp-thumb"
-              *ngFor="let img of product.images; let i = index"
-              [class.active]="i === activeImageIdx"
-              (click)="setActiveImage(i)">
-              <img [src]="img" [alt]="product.name + ' ' + (i+1)" loading="lazy" />
-            </div>
+  <div class="pdp-grid">
+    <div class="gallery">
+      <div class="gallery-desktop">
+        <div class="thumbs" *ngIf="slides.length > 1">
+          <button type="button" class="thumb-nav" (click)="scrollThumbs(-1)" aria-label="Previous images">⌃</button>
+          <div class="thumbs-track" #thumbsTrack>
+            <button type="button" class="thumb" *ngFor="let slide of slides; let i = index"
+              [class.active]="i === activeImageIdx" (click)="setActiveImage(i)">
+              <img *ngIf="slide.type === 'image'" [src]="slide.url" [alt]="product.name" />
+              <img *ngIf="slide.type === 'video' && slide.poster" [src]="slide.poster" [alt]="product.name" />
+              <span *ngIf="slide.type === 'video'" class="thumb-play"></span>
+            </button>
           </div>
-          <button class="pdp-thumb-arrow down" (click)="scrollThumbs(1)" aria-label="Scroll down">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-              <polyline points="6 9 12 15 18 9"/>
-            </svg>
-          </button>
+          <button type="button" class="thumb-nav" (click)="scrollThumbs(1)" aria-label="Next images">⌄</button>
         </div>
 
-        <div class="pdp-main-img-wrap">
-          <img *ngIf="product.images?.length"
-            [src]="product.images[activeImageIdx]"
-            [alt]="product.name"
-            class="pdp-main-img" />
-          <div class="pdp-img-ph" *ngIf="!product.images?.length">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" width="60" height="60">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <polyline points="21 15 16 10 5 21"/>
-            </svg>
-          </div>
+        <div class="stage">
+          <img *ngIf="activeSlide?.type === 'image'" [src]="activeSlide.url" [alt]="product.name" (click)="openLightbox()" />
+          <video *ngIf="activeSlide?.type === 'video'" [src]="activeSlide.url" [poster]="activeSlide.poster || ''"
+            controls muted loop playsinline autoplay></video>
+          <button *ngIf="activeSlide?.type === 'image'" type="button" class="zoom" (click)="openLightbox()" aria-label="Zoom image">
+            <svg viewBox="0 0 14 14" width="14" height="14"><path fill="#111" d="M6 0h2v6h6v2H8v6H6V8H0V6h6z"/></svg>
+          </button>
+          <div class="stage-empty" *ngIf="!slides.length">No image</div>
         </div>
       </div>
 
-      <!-- Mobile: swipe slider -->
-      <div class="pdp-mobile-gallery"
+      <div class="gallery-mobile"
         (touchstart)="onMobTouchStart($event)"
         (touchend)="onMobTouchEnd($event)">
-        <div class="pdp-mob-slide-wrap">
-          <img *ngIf="product.images?.length"
-            [src]="product.images[activeImageIdx]"
-            [alt]="product.name" />
-        </div>
+        <img *ngIf="activeSlide?.type === 'image'" [src]="activeSlide.url" [alt]="product.name" (click)="openLightbox()" />
+        <video *ngIf="activeSlide?.type === 'video'" [src]="activeSlide.url" [poster]="activeSlide.poster || ''"
+          controls muted loop playsinline></video>
+        <div class="stage-empty" *ngIf="!slides.length">No image</div>
       </div>
-      <div class="pdp-mob-dots" *ngIf="product.images?.length > 1">
-        <span *ngFor="let img of product.images; let i = index"
-          class="pdp-mob-dot" [class.active]="i === activeImageIdx"
-          (click)="setActiveImage(i)"></span>
+      <div class="dots" *ngIf="slides.length > 1">
+        <button type="button" *ngFor="let slide of slides; let i = index" [class.on]="i === activeImageIdx" (click)="setActiveImage(i)"></button>
       </div>
-
     </div>
 
-    <!-- ════ INFO ════ -->
-    <div class="pdp-info-col">
+    <div class="info">
+      <h1>{{ product.name }}</h1>
+      <p class="lead" *ngIf="product.shortDescription">{{ product.shortDescription }}</p>
 
-      <!-- Best Sellers tag -->
-      <div class="pdp-category-tag" *ngIf="product.resultTag">{{ product.resultTag }}</div>
-      <div class="pdp-category-tag" *ngIf="!product.resultTag && product.categoryName">{{ product.categoryName }}</div>
-
-      <h1 class="pdp-name">{{ product.name }}</h1>
-      <p class="pdp-lead" *ngIf="product.shortDescription">{{ product.shortDescription }}</p>
-
-      <div class="pdp-price-block">
-        <span class="pdp-price-orig" *ngIf="product.salePrice && product.salePrice < product.price">
-          {{ sharedService.currency }}{{ product.price | number:'1.0-0' }}
-        </span>
-        <span class="pdp-price-sale">{{ sharedService.currency }}{{ (product.salePrice || product.price) | number:'1.0-0' }}</span>
+      <div class="price">
+        <span class="now">{{ money(currentPrice) }}</span>
+        <s *ngIf="hasComparePrice">{{ money(product.price) }}</s>
       </div>
 
-      <!-- Variants / Size selector -->
-      <div class="pdp-variants-block" *ngIf="product.variants?.length">
-        <div class="pdp-variant-group" *ngFor="let v of product.variants">
-          <div class="pdp-variant-header-row">
-            <div class="pdp-variant-label">SELECT {{ v.name | uppercase }}</div>
-            <button class="pdp-size-guide-btn" *ngIf="v.name.toLowerCase().includes('size') && product.sizeGuideImage"
-              (click)="openSizeGuide()">
-              Size Guide
-            </button>
-          </div>
-          <div class="pdp-variant-options">
-            <button *ngFor="let opt of v.options"
-              class="pdp-variant-btn"
-              [class.selected]="selectedOptions[v.name] === opt.label"
+      <ng-container *ngFor="let v of orderedVariants">
+        <div class="colors" *ngIf="isColorVariant(v.name)">
+          <p>Colors</p>
+          <div class="color-row">
+            <button type="button" class="color-item" *ngFor="let opt of v.options"
+              [class.active]="selectedOptions[v.name] === opt.label"
               (click)="selectVariant(v.name, opt)">
-              {{ opt.label }}
+              <span class="chip" [style.background]="swatchBackground(opt)"></span>
+              <span>{{ opt.label }}</span>
             </button>
           </div>
         </div>
-      </div>
 
-      <!-- Quantity -->
-      <div class="pdp-qty-block">
-        <div class="pdp-qty-ctrl">
-          <button class="pdp-qty-btn" (click)="decrementAddQty()" [disabled]="addQty <= 1">-</button>
-          <span class="pdp-qty-val">{{ addQty }}</span>
-          <button class="pdp-qty-btn" (click)="incrementAddQty()">+</button>
-        </div>
-      </div>
-
-      <!-- CTA -->
-      <div class="pdp-cta-btns">
-        <button class="pdp-buy-btn" #buyBtnRef (click)="buyNow()" [class.pdp-btn-shake]="showVariantError">
-          <div class="pdp-buy-row">
-            <div class="pdp-buy-text">
-              <span class="pdp-buy-main">{{ sharedService.siteConfig?.buyNowText || 'Order Now - Cash on Delivery' }}</span>
-              <span class="pdp-buy-subtext" *ngIf="sharedService.siteConfig?.buyNowSubtext">
-                {{ sharedService.siteConfig.buyNowSubtext }}
-              </span>
-            </div>
+        <div class="variant" *ngIf="!isColorVariant(v.name)">
+          <div class="variant-head">
+            <span>{{ v.name }}: <b>{{ selectedOptions[v.name] }}</b></span>
+            <button type="button" class="text-link" *ngIf="isSizeVariant(v.name) && product.sizeGuideImage" (click)="openSizeGuide()">Size guide</button>
           </div>
-        </button>
-        <div class="pdp-variant-error" *ngIf="showVariantError">
-          ⚠️ Please select {{ missingVariantName }} before ordering
+          <div class="opt-row">
+            <button type="button" class="opt" *ngFor="let opt of v.options"
+              [class.selected]="selectedOptions[v.name] === opt.label"
+              (click)="selectVariant(v.name, opt)">{{ opt.label }}</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="sale">
+        <div class="sale-head">
+          <span class="sale-badge">SALE</span>
+          <span>Early access — buy more, save more</span>
+        </div>
+        <div class="sale-tiers">
+          <div class="tier">
+            <span>Buy 1</span>
+            <span class="off">Free shipping</span>
+          </div>
+          <div class="tier hot">
+            <span>Prepaid</span>
+            <span class="off">Extra off</span>
+          </div>
+          <div class="tier best">
+            <em>Best value</em>
+            <span>Buy 3</span>
+            <span class="off">7 days</span>
+          </div>
+        </div>
+        <p class="sale-note">+ Hallmarked gold, insured packing</p>
+        <p class="sale-sub">Offers shown here follow the checkout on this order.</p>
+        <div class="timer">
+          <span class="timer-label">Sale ends in</span>
+          <div class="timer-units">
+            <div><b>{{ saleClock.d }}</b><small>Days</small></div>
+            <i>:</i>
+            <div><b>{{ saleClock.h }}</b><small>Hrs</small></div>
+            <i>:</i>
+            <div><b>{{ saleClock.m }}</b><small>Min</small></div>
+            <i>:</i>
+            <div><b>{{ saleClock.s }}</b><small>Sec</small></div>
+          </div>
         </div>
       </div>
 
-      <!-- Guarantee Bar -->
-      <div class="pdp-assure">
-        <span>Hallmarked</span>
-        <span>Insured delivery</span>
-        <span>Quick checkout</span>
-        <span>7-day returns</span>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <!-- PRODUCT DETAILS — 100% width                                          -->
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="pdp-description-section" *ngIf="product.description">
-    <div class="pdp-full-section-inner">
-      <h2 class="pdp-full-section-title">Product Details</h2>
-      <div class="pdp-full-section-divider"></div>
-      <div class="pdp-description-card">
-        <div class="pdp-description-content" [innerHTML]="safeDescription"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="pdp-reels" *ngIf="reels.length">
-    <div class="pdp-full-section-inner">
-      <h2 class="pdp-full-section-title">On reel</h2>
-      <div class="pdp-full-section-divider"></div>
-      <div class="pdp-reels-swiper">
-        <button class="pdp-reels-nav prev" type="button" (click)="scrollReels(-1)" aria-label="Previous reel">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <div class="pdp-reels-row" #pdpReelsTrack>
-          <button type="button" class="pdp-reel-card" *ngFor="let reel of reels" (click)="openReel(reel)">
-            <video [src]="reel.videoUrl" [poster]="reel.thumbnail || ''" muted loop playsinline
-              (mouseenter)="previewReel($event, true)" (mouseleave)="previewReel($event, false)"></video>
-            <i class="pdp-reel-play" aria-hidden="true"></i>
-            <span>{{ reel.title || 'Watch' }}</span>
-          </button>
+      <div class="buy-row" [class.shake]="showVariantError">
+        <div class="qty">
+          <button type="button" (click)="decrementAddQty()" [disabled]="addQty <= 1" aria-label="Decrease quantity">−</button>
+          <span>{{ addQty }}</span>
+          <button type="button" (click)="incrementAddQty()" aria-label="Increase quantity">+</button>
         </div>
-        <button class="pdp-reels-nav next" type="button" (click)="scrollReels(1)" aria-label="Next reel">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="9 18 15 12 9 6"/></svg>
+        <button type="button" class="btn solid grow" (click)="addToBagAndOpenCart()">
+          {{ addedToBag ? 'Added' : 'Add To Cart' }}
         </button>
       </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <!-- GALLERY — 100% width                                                  -->
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="pdp-gallery-section" *ngIf="product.galleryMedia?.length">
-      <div class="pdp-gallery-grid">
-        <div class="pdp-gallery-item" *ngFor="let m of product.galleryMedia; let i = index"
-          (click)="openGalleryItem(i)">
-          <img *ngIf="m.type === 'image'" [src]="m.url" [alt]="product.name + ' gallery ' + (i+1)" loading="lazy" />
-          <div class="pdp-gallery-video-wrap" *ngIf="m.type === 'video'">
-            <video [src]="m.url" [poster]="m.thumbnail" muted loop playsinline preload="none"
-              class="pdp-gallery-video"
-              (mouseenter)="playGalleryVideo($event)"
-              (mouseleave)="pauseGalleryVideo($event)"></video>
-            <div class="pdp-gallery-play-icon">
-              <svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <!-- CUSTOMER REVIEWS                                                       -->
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="pdp-reviews-section" id="reviews" *ngIf="reviews.length > 0 || showReviewForm || (reviewStats && reviewStats.totalCount > 0)">
-    <div class="pdp-full-section-inner">
-      <h2 class="pdp-full-section-title">Customer Reviews</h2>
-
-      <!-- Stats bar -->
-      <div class="pdp-reviews-stats" *ngIf="reviewStats?.totalCount > 0">
-        <div class="pdp-rev-overall">
-          <div class="pdp-rev-score-stars">
-            <svg *ngFor="let s of getStarArr(reviewStats.avgRating)"
-              viewBox="0 0 20 20" width="18" height="18"
-              [class.star-filled]="s === 'full'"
-              [class.star-half]="s === 'half'"
-              [class.star-empty]="s === 'empty'">
-              <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.44.91-5.32L2.27 6.62l5.34-.78z"/>
-            </svg>
-          </div>
-          <div class="pdp-rev-score-num">{{ reviewStats.avgRating | number:'1.2-2' }} out of 5</div>
-          <div class="pdp-rev-score-count">Based on {{ reviewStats.totalCount }} reviews</div>
-        </div>
-        <div class="pdp-rev-bars">
-          <div class="pdp-rev-bar-row" *ngFor="let s of [5,4,3,2,1]">
-            <span class="pdp-rev-bar-stars">
-              <svg *ngFor="let x of [1,2,3,4,5]" viewBox="0 0 20 20" width="11" height="11"
-                [class.star-filled]="x <= s" [class.star-empty]="x > s">
-                <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.44.91-5.32L2.27 6.62l5.34-.78z"/>
-              </svg>
-            </span>
-            <div class="pdp-rev-bar-track">
-              <div class="pdp-rev-bar-fill" [style.width]="getStarPercent(s) + '%'"></div>
-            </div>
-            <span class="pdp-rev-bar-count">{{ reviewStats['star' + s] || 0 }}</span>
-          </div>
-        </div>
-        <div class="pdp-rev-write-col">
-          <button class="pdp-write-review-btn" (click)="showReviewForm = !showReviewForm">
-            Write a review
-          </button>
-        </div>
-      </div>
-
-      <!-- Sort -->
-      <div class="pdp-rev-sort-row" *ngIf="reviews.length > 0">
-        <select class="pdp-rev-sort-select" [ngModel]="reviewSort" (ngModelChange)="changeReviewSort($event)">
-          <option value="newest">Pictures First</option>
-          <option value="highest">Highest Rated</option>
-          <option value="lowest">Lowest Rated</option>
-        </select>
-      </div>
-
-      <!-- Review cards grid -->
-      <div class="pdp-review-grid" *ngIf="reviews.length > 0">
-        <div class="pdp-review-card" *ngFor="let r of reviews">
-          <div class="pdp-rc-top">
-            <span class="pdp-rc-stars">
-              <svg *ngFor="let s of getStarArr(r.rating)" viewBox="0 0 20 20" width="14" height="14"
-                [class.star-filled]="s === 'full'" [class.star-empty]="s !== 'full'">
-                <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.44.91-5.32L2.27 6.62l5.34-.78z"/>
-              </svg>
-            </span>
-            <span class="pdp-rc-date">{{ formatDate(r.created_at) }}</span>
-          </div>
-          <!-- Reviewer row: avatar/image + name -->
-          <div class="pdp-rc-reviewer">
-            <div class="pdp-rc-avatar" *ngIf="!r.reviewImage">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <img *ngIf="r.reviewImage" [src]="r.reviewImage" alt="Review image"
-              class="pdp-rc-review-img"
-              onerror="this.style.display='none'" />
-            <span class="pdp-rc-name">{{ r.reviewerName }}</span>
-            <span class="pdp-rc-verified">Verified</span>
-          </div>
-          <div class="pdp-rc-title" *ngIf="r.title">{{ r.title }}</div>
-          <div class="pdp-rc-body" *ngIf="r.body">{{ r.body }}</div>
-        </div>
-      </div>
-
-      <!-- Load more -->
-      <div class="pdp-rev-load-more" *ngIf="hasMoreReviews && !reviewsLoading">
-        <button class="pdp-load-more-btn" (click)="loadMoreReviews()">Load More Reviews</button>
-      </div>
-
-      <!-- Write review form -->
-      <div class="pdp-write-review-form" *ngIf="showReviewForm">
-        <h3 class="pdp-wrf-title">Write a review</h3>
-        <div class="pdp-wrf-field">
-          <label>RATING</label>
-          <div class="pdp-wrf-stars">
-            <svg *ngFor="let s of [1,2,3,4,5]"
-              viewBox="0 0 20 20" width="28" height="28"
-              [class.star-filled]="s <= reviewForm.rating"
-              [class.star-empty]="s > reviewForm.rating"
-              style="cursor:pointer"
-              (click)="reviewForm.rating = s">
-              <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.32L10 13.27l-4.77 2.44.91-5.32L2.27 6.62l5.34-.78z"/>
-            </svg>
-          </div>
-        </div>
-        <div class="pdp-wrf-field">
-          <label>REVIEW TITLE</label>
-          <input type="text" class="pdp-wrf-input" placeholder="Give your review a title"
-            [(ngModel)]="reviewForm.title" maxlength="100" />
-        </div>
-        <div class="pdp-wrf-field">
-          <label>REVIEW CONTENT</label>
-          <textarea class="pdp-wrf-textarea" rows="5" placeholder="Start writing here..."
-            [(ngModel)]="reviewForm.body"></textarea>
-        </div>
-        <div class="pdp-wrf-field">
-          <label>DISPLAY NAME</label>
-          <input type="text" class="pdp-wrf-input" placeholder="Display name"
-            [(ngModel)]="reviewForm.reviewerName" />
-        </div>
-        <div class="pdp-wrf-actions">
-          <button class="pdp-wrf-cancel" (click)="showReviewForm = false">Cancel review</button>
-          <button class="pdp-wrf-submit" (click)="submitReview()" [disabled]="reviewSubmitting">
-            {{ reviewSubmitting ? 'Submitting...' : 'Submit Review' }}
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <!-- STICKY BOTTOM BAR — mobile only                                       -->
-  <!-- ═══════════════════════════════════════════════════════════════════════ -->
-  <div class="pdp-sticky-bar" [class.show]="showStickyBar">
-    <div class="pdp-sticky-inner">
-      <div class="pdp-sticky-piece">
-        <img *ngIf="product.images?.length" [src]="product.images[activeImageIdx] || product.images[0]" [alt]="product.name" />
-        <div class="pdp-sticky-meta">
-          <span class="pdp-sticky-kicker">{{ product.resultTag || product.categoryName }}</span>
-          <span class="pdp-sticky-name">{{ product.name }}</span>
-          <span class="pdp-sticky-price">{{ sharedService.currency }}{{ (product.salePrice || product.price) | number:'1.0-0' }}</span>
-        </div>
-      </div>
-      <button class="pdp-sticky-buy-btn" (click)="buyNow()" [class.pdp-btn-shake]="showVariantError">
+      <button type="button" class="btn solid block" #buyBtnRef (click)="buyNow()">
         {{ sharedService.siteConfig?.buyNowText || 'Buy Now' }}
       </button>
+      <p class="variant-error" *ngIf="showVariantError">Please select {{ missingVariantName }} before ordering</p>
+
+      <div class="delivery">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/>
+        </svg>
+        <p>Estimate delivery times: <strong>5 to 6 days.</strong></p>
+      </div>
+
+      <div class="share">
+        <button type="button" class="share-toggle" (click)="toggleShare()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 16.1a2.9 2.9 0 0 0-2.3 1.1l-6.1-3.1a2.8 2.8 0 0 0 0-1.2l6.1-3.1A2.9 2.9 0 1 0 15 7a2.8 2.8 0 0 0 .1.7L9 10.8a3 3 0 1 0 0 4.4l6.1 3.1a2.8 2.8 0 0 0-.1.7 3 3 0 1 0 3-2.9z"/></svg>
+          Share
+        </button>
+        <div class="share-panel" *ngIf="shareOpen">
+          <div class="share-url">
+            <span>{{ product.name }}</span>
+            <button type="button" (click)="copyLink()">{{ linkCopied ? 'Copied' : 'Copy' }}</button>
+          </div>
+          <div class="share-nets">
+            <button type="button" (click)="shareTo('facebook')">Facebook</button>
+            <button type="button" (click)="shareTo('twitter')">Twitter</button>
+            <button type="button" (click)="shareTo('pinterest')">Pinterest</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc" *ngIf="specRows.length" [class.open]="accOpen['specs']">
+        <button type="button" class="acc-head" (click)="toggleAcc('specs')">
+          <span>
+            <strong>Specifications</strong>
+            <small>Technical details and features</small>
+          </span>
+          <i class="plus"></i>
+        </button>
+        <div class="acc-body">
+          <div class="spec" *ngFor="let row of specRows">
+            <h6>{{ row.title }}</h6>
+            <p *ngIf="row.text">{{ row.text }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc" *ngIf="product.description" [class.open]="accOpen['desc']">
+        <button type="button" class="acc-head" (click)="toggleAcc('desc')">
+          <strong>Description</strong>
+          <i class="plus"></i>
+        </button>
+        <div class="acc-body desc" [innerHTML]="safeDescription"></div>
+      </div>
+
+      <div class="acc" [class.open]="accOpen['care']">
+        <button type="button" class="acc-head" (click)="toggleAcc('care')">
+          <strong>Care</strong>
+          <i class="plus"></i>
+        </button>
+        <div class="acc-body">
+          <div class="spec" *ngFor="let row of careRows">
+            <h6>{{ row.title }}</h6>
+            <p *ngIf="row.text">{{ row.text }}</p>
+          </div>
+          <p *ngIf="!careRows.length">Wipe with a soft dry cloth after wear. Keep the piece in its pouch, away from perfume and moisture, and store it separately so it does not scratch.</p>
+        </div>
+      </div>
+
+      <div class="acc" [class.open]="accOpen['ship']">
+        <button type="button" class="acc-head" (click)="toggleAcc('ship')">
+          <strong>Shipping</strong>
+          <i class="plus"></i>
+        </button>
+        <div class="acc-body">
+          <p>Orders are packed within <strong>1–2 business days</strong> and sent with insured delivery. Standard delivery usually takes <strong>5–6 days</strong>. Prepaid orders include complimentary shipping.</p>
+        </div>
+      </div>
+
+      <div class="acc" [class.open]="accOpen['returns']">
+        <button type="button" class="acc-head" (click)="toggleAcc('returns')">
+          <strong>Return &amp; Exchange</strong>
+          <i class="plus"></i>
+        </button>
+        <div class="acc-body">
+          <p>You can request a return within <strong>7 days</strong> of delivery. The piece should be unused, in its original packaging, with the tag intact. After pickup and a quality check, the refund is started.</p>
+        </div>
+      </div>
+
+      <div class="acc" *ngFor="let faq of product.faqs; let i = index" [class.open]="faqOpen[i]">
+        <button type="button" class="acc-head" (click)="toggleFaq(i)">
+          <strong>{{ faq.question }}</strong>
+          <i class="plus"></i>
+        </button>
+        <div class="acc-body"><p>{{ faq.answer }}</p></div>
+      </div>
     </div>
   </div>
 
+  <div class="trust">
+    <div><b>7 Days</b><span>Easy returns</span></div>
+    <div><b>Hallmarked</b><span>Checked by hand</span></div>
+    <div><b>COD</b><span>Available at checkout</span></div>
+  </div>
+
+  <section class="reviews" id="reviews" *ngIf="reviewStats?.totalCount > 0 || reviews.length || showReviewForm">
+    <h2>Customer Reviews</h2>
+    <p class="rev-summary" *ngIf="reviewStats?.totalCount">
+      Overall rating: <b>{{ reviewStats.avgRating | number:'1.1-1' }} / 5</b> from {{ reviewStats.totalCount }} reviews.
+    </p>
+    <button type="button" class="text-link" (click)="showReviewForm = !showReviewForm">Write a review</button>
+
+    <div class="rev-list">
+      <article class="rev" *ngFor="let r of reviews">
+        <img *ngIf="r.reviewImage" [src]="r.reviewImage" [alt]="r.reviewerName" />
+        <div>
+          <h3 *ngIf="r.title">{{ r.title }}</h3>
+          <p class="rev-meta">
+            <span class="stars">
+              <i *ngFor="let s of getStarArr(r.rating)" [class.on]="s === 'full'">★</i>
+            </span>
+            {{ r.reviewerName }} · {{ r.rating }}/5
+            <em>Verified</em>
+            {{ formatDate(r.created_at) }}
+          </p>
+          <p class="rev-product">{{ product.name }}</p>
+          <p *ngIf="r.body">{{ r.body }}</p>
+        </div>
+      </article>
+    </div>
+    <button type="button" class="btn ghost" *ngIf="hasMoreReviews && !reviewsLoading" (click)="loadMoreReviews()">Load more reviews</button>
+
+    <form class="rev-form" *ngIf="showReviewForm" (submit)="$event.preventDefault(); submitReview()">
+      <h3>Write a review</h3>
+      <div class="form-stars">
+        <button type="button" *ngFor="let s of [1,2,3,4,5]" [class.on]="s <= reviewForm.rating" (click)="reviewForm.rating = s">★</button>
+      </div>
+      <input type="text" placeholder="Review title" [(ngModel)]="reviewForm.title" name="reviewTitle" />
+      <textarea rows="4" placeholder="Start writing here..." [(ngModel)]="reviewForm.body" name="reviewBody"></textarea>
+      <input type="text" placeholder="Display name" [(ngModel)]="reviewForm.reviewerName" name="reviewName" />
+      <div class="form-actions">
+        <button type="button" class="text-link" (click)="showReviewForm = false">Cancel</button>
+        <button type="submit" class="btn solid" [disabled]="reviewSubmitting">{{ reviewSubmitting ? 'Submitting...' : 'Submit review' }}</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="related" *ngIf="related.length">
+    <h2>People Also Bought</h2>
+    <p>Similar pieces people are looking at.</p>
+    <div class="related-grid">
+      <a *ngFor="let item of related" [routerLink]="['/product', item.slug]">
+        <img *ngIf="cardImage(item)" [src]="cardImage(item)" [alt]="item.name" />
+        <span>{{ item.name }}</span>
+        <strong>
+          {{ money(item.salePrice && item.salePrice < item.price ? item.salePrice : item.price) }}
+          <s *ngIf="item.salePrice && item.salePrice < item.price">{{ money(item.price) }}</s>
+        </strong>
+      </a>
+    </div>
+  </section>
+
+  <section class="reels" *ngIf="reels.length">
+    <h2>On reel</h2>
+    <div class="reel-row" #pdpReelsTrack>
+      <button type="button" *ngFor="let reel of reels" (click)="openReel(reel)">
+        <video [src]="reel.videoUrl" [poster]="reel.thumbnail || ''" muted loop playsinline
+          (mouseenter)="previewReel($event, true)" (mouseleave)="previewReel($event, false)"></video>
+        <span>{{ reel.title || 'Watch' }}</span>
+      </button>
+    </div>
+  </section>
 </div>
 
-<div class="pdp-reel-modal" *ngIf="activeReel" (click)="closeReel()">
-  <div class="pdp-reel-modal-card" (click)="$event.stopPropagation()">
-    <button type="button" class="pdp-reel-close" (click)="closeReel()" aria-label="Close">×</button>
+<div class="sticky" [class.show]="showStickyBar && product && !isLoading">
+  <button type="button" (click)="addToBagAndOpenCart()">Add To Cart</button>
+  <button type="button" (click)="buyNow()">{{ sharedService.siteConfig?.buyNowText || 'Buy Now' }}</button>
+</div>
+
+<div class="lightbox" *ngIf="lightboxOpen && activeSlide?.type === 'image'" (click)="closeLightbox()">
+  <button type="button" class="lightbox-close" (click)="closeLightbox()" aria-label="Close">×</button>
+  <button type="button" class="lightbox-nav prev" (click)="$event.stopPropagation(); prevImage()" aria-label="Previous">‹</button>
+  <img [src]="activeSlide.url" [alt]="product?.name" (click)="$event.stopPropagation()" />
+  <button type="button" class="lightbox-nav next" (click)="$event.stopPropagation(); nextImage()" aria-label="Next">›</button>
+</div>
+
+<div class="reel-modal" *ngIf="activeReel" (click)="closeReel()">
+  <div (click)="$event.stopPropagation()">
+    <button type="button" (click)="closeReel()" aria-label="Close">×</button>
     <video [src]="activeReel.videoUrl" [poster]="activeReel.thumbnail || ''" controls autoplay playsinline></video>
     <p>{{ activeReel.title }}</p>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SIZE GUIDE MODAL                                                       -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="sg-backdrop" [class.open]="sizeGuideOpen" (click)="closeSizeGuide()"></div>
 <div class="sg-modal" [class.open]="sizeGuideOpen" role="dialog" aria-modal="true" aria-label="Size Guide">
   <div class="sg-modal-inner" (click)="$event.stopPropagation()">
     <div class="sg-header">
-      <span class="sg-title">Size Guide</span>
-      <button class="sg-close" (click)="closeSizeGuide()" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
+      <span>Size Guide</span>
+      <button type="button" (click)="closeSizeGuide()" aria-label="Close">×</button>
     </div>
     <div class="sg-body">
-      <img *ngIf="product?.sizeGuideImage" [src]="product.sizeGuideImage" alt="Size Guide" class="sg-img" />
+      <img *ngIf="product?.sizeGuideImage" [src]="product.sizeGuideImage" alt="Size Guide" />
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- CART OFFCANVAS (right slide-in)                                        -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
 <div class="cart-offcanvas-backdrop" [class.open]="cartPanelOpen" (click)="closeCartPanel()"></div>
-
 <div class="cart-offcanvas" [class.open]="cartPanelOpen" role="dialog" aria-modal="true">
-
-  <!-- Header -->
   <div class="coc-header">
-    <span class="coc-title">Cart</span>
-    <button class="coc-close" (click)="closeCartPanel()" aria-label="Close cart">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+    <span>Cart</span>
+    <button type="button" (click)="closeCartPanel()" aria-label="Close cart">×</button>
   </div>
-
-  <!-- Free shipping strip -->
-  <div class="coc-free-ship">
-    <marquee>
-    🚚 Free shipping on every order
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-    💥 Buy 3 Products for Just ₹699!
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-    💳 Get up to 20% OFF on all Prepaid Orders!
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-    </marquee>
-  </div>
-
-  <!-- Cart items -->
   <div class="coc-items">
-    <div class="coc-empty" *ngIf="cartService.items.length === 0">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 01-8 0"/>
-      </svg>
-      <p>Your cart is empty</p>
-    </div>
-
+    <div class="coc-empty" *ngIf="cartService.items.length === 0"><p>Your cart is empty</p></div>
     <div class="coc-item" *ngFor="let item of cartService.items">
-      <div class="coc-item-img">
-        <img *ngIf="item.image" [src]="item.image" [alt]="item.name" />
-        <div *ngIf="!item.image" class="coc-item-img-ph"></div>
-      </div>
-      <div class="coc-item-info">
-        <div class="coc-item-name">{{ item.name }}</div>
-        <div class="coc-item-price">₹ {{ item.salePrice || item.price }}</div>
-        <div class="coc-item-qty">
-          <button class="coc-qty-btn" (click)="cartService.updateQty(item.id, item.quantity - 1, item.selectedOptions)">−</button>
-          <span class="coc-qty-val">{{ item.quantity }}</span>
-          <button class="coc-qty-btn" (click)="cartService.updateQty(item.id, item.quantity + 1, item.selectedOptions)">+</button>
+      <img *ngIf="item.image" [src]="item.image" [alt]="item.name" />
+      <div>
+        <b>{{ item.name }}</b>
+        <span>{{ money(item.salePrice || item.price) }}</span>
+        <div class="qty mini">
+          <button type="button" (click)="cartService.updateQty(item.id, item.quantity - 1, item.selectedOptions)">−</button>
+          <span>{{ item.quantity }}</span>
+          <button type="button" (click)="cartService.updateQty(item.id, item.quantity + 1, item.selectedOptions)">+</button>
         </div>
       </div>
-      <div class="coc-item-right">
-        <span class="coc-item-total">₹ {{ (item.salePrice || item.price) * item.quantity }}</span>
-        <button class="coc-item-remove" (click)="cartService.removeItem(item.id, item.selectedOptions)" aria-label="Remove">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
+      <button type="button" class="remove" (click)="cartService.removeItem(item.id, item.selectedOptions)" aria-label="Remove">×</button>
     </div>
   </div>
-
-  <!-- Footer -->
   <div class="coc-footer" *ngIf="cartService.items.length > 0">
-    <div class="coc-total-row">
-      <span class="coc-total-label">TOTAL</span>
-      <span class="coc-total-val">₹ {{ cartService.getTotal() }}</span>
-    </div>
-    <button class="coc-place-order-btn" (click)="goToCheckout()">
-      <span class="coc-order-main">PLACE ORDER</span>
-      <span class="coc-order-sub">Upto 15% off on Prepaid Orders</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-        stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-        <polyline points="9 18 15 12 9 6"/>
-      </svg>
-    </button>
+    <div><span>Total</span><b>{{ money(cartService.getTotal()) }}</b></div>
+    <button type="button" class="btn solid block" (click)="goToCheckout()">Place order</button>
   </div>
-
 </div>
