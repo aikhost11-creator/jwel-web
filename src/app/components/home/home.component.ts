@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     loadProducts() {
-        this.productService.getProducts({ limit: 24, offset: 0 })
+        this.productService.getProducts({ limit: 12, offset: 0 })
             .pipe(catchError(() => of({ data: [] })))
             .subscribe((res: any) => {
                 const raw = res?.data || res?.products || [];
@@ -113,8 +113,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     startSlider() {
         this.stopSlider();
+        if (!isPlatformBrowser(this.platformId) || document.hidden) return;
         if (this.visibleBanners.length < 2) return;
         this.slideTimer = setInterval(() => this.stepSlide(1), 5500);
+    }
+
+    @HostListener('document:visibilitychange')
+    onVisibility() {
+        if (document.hidden) this.stopSlider();
+        else this.startSlider();
     }
 
     stopSlider() {
@@ -166,8 +173,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     previewReel(event: Event, play: boolean) {
         const video = event.target as HTMLVideoElement;
         if (!video?.play) return;
-        if (play) video.play().catch(() => {});
-        else { video.pause(); video.currentTime = 0; }
+        if (play) {
+            const src = video.dataset['src'];
+            if (src && video.getAttribute('src') !== src) video.src = src;
+            video.play().catch(() => {});
+        } else {
+            video.pause();
+            try { video.currentTime = 0; } catch { /* not ready */ }
+        }
     }
 
     ngOnDestroy(): void {
@@ -207,6 +220,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     buyNow(e: Event, product: any, qty: number = 1, selectedOptions: { [k: string]: string } = {}) {
         e.stopPropagation();
+        e.preventDefault();
         this.qcService.open(product, qty, selectedOptions);
     }
 

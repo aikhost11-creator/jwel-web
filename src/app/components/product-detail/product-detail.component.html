@@ -97,6 +97,21 @@
         </div>
       </ng-container>
 
+      <div class="buy-row" [class.shake]="showVariantError">
+        <div class="qty">
+          <button type="button" (click)="decrementAddQty()" [disabled]="addQty <= 1" aria-label="Decrease quantity">−</button>
+          <span>{{ addQty }}</span>
+          <button type="button" (click)="incrementAddQty()" aria-label="Increase quantity">+</button>
+        </div>
+        <button type="button" class="btn solid grow" (click)="addToBagAndOpenCart()">
+          {{ addedToBag ? 'Added' : 'Add To Cart' }}
+        </button>
+      </div>
+      <button type="button" class="btn solid block" #buyBtnRef (click)="buyNow()">
+        {{ sharedService.siteConfig?.buyNowText || 'Buy Now' }}
+      </button>
+      <p class="variant-error" *ngIf="showVariantError">Please select {{ missingVariantName }} before ordering</p>
+
       <div class="sale">
         <div class="sale-head">
           <span class="sale-badge">SALE</span>
@@ -133,44 +148,11 @@
         </div>
       </div>
 
-      <div class="buy-row" [class.shake]="showVariantError">
-        <div class="qty">
-          <button type="button" (click)="decrementAddQty()" [disabled]="addQty <= 1" aria-label="Decrease quantity">−</button>
-          <span>{{ addQty }}</span>
-          <button type="button" (click)="incrementAddQty()" aria-label="Increase quantity">+</button>
-        </div>
-        <button type="button" class="btn solid grow" (click)="addToBagAndOpenCart()">
-          {{ addedToBag ? 'Added' : 'Add To Cart' }}
-        </button>
-      </div>
-      <button type="button" class="btn solid block" #buyBtnRef (click)="buyNow()">
-        {{ sharedService.siteConfig?.buyNowText || 'Buy Now' }}
-      </button>
-      <p class="variant-error" *ngIf="showVariantError">Please select {{ missingVariantName }} before ordering</p>
-
       <div class="delivery">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6">
           <path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/>
         </svg>
         <p>Estimate delivery times: <strong>5 to 6 days.</strong></p>
-      </div>
-
-      <div class="share">
-        <button type="button" class="share-toggle" (click)="toggleShare()">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 16.1a2.9 2.9 0 0 0-2.3 1.1l-6.1-3.1a2.8 2.8 0 0 0 0-1.2l6.1-3.1A2.9 2.9 0 1 0 15 7a2.8 2.8 0 0 0 .1.7L9 10.8a3 3 0 1 0 0 4.4l6.1 3.1a2.8 2.8 0 0 0-.1.7 3 3 0 1 0 3-2.9z"/></svg>
-          Share
-        </button>
-        <div class="share-panel" *ngIf="shareOpen">
-          <div class="share-url">
-            <span>{{ product.name }}</span>
-            <button type="button" (click)="copyLink()">{{ linkCopied ? 'Copied' : 'Copy' }}</button>
-          </div>
-          <div class="share-nets">
-            <button type="button" (click)="shareTo('facebook')">Facebook</button>
-            <button type="button" (click)="shareTo('twitter')">Twitter</button>
-            <button type="button" (click)="shareTo('pinterest')">Pinterest</button>
-          </div>
-        </div>
       </div>
 
       <div class="acc" *ngIf="specRows.length" [class.open]="accOpen['specs']">
@@ -247,41 +229,81 @@
     <div><b>COD</b><span>Available at checkout</span></div>
   </div>
 
-  <section class="reviews" id="reviews" *ngIf="reviewStats?.totalCount > 0 || reviews.length || showReviewForm">
-    <h2>Customer Reviews</h2>
-    <p class="rev-summary" *ngIf="reviewStats?.totalCount">
-      Overall rating: <b>{{ reviewStats.avgRating | number:'1.1-1' }} / 5</b> from {{ reviewStats.totalCount }} reviews.
-    </p>
-    <button type="button" class="text-link" (click)="showReviewForm = !showReviewForm">Write a review</button>
+  <section class="reviews" id="reviews">
+    <div class="rev-head">
+      <div>
+        <p class="rev-kicker">Client notes</p>
+        <h2>Customer Reviews</h2>
+      </div>
+      <button type="button" class="rev-write" (click)="showReviewForm = !showReviewForm">
+        {{ showReviewForm ? 'Close' : 'Write a review' }}
+      </button>
+    </div>
+
+    <div class="rev-score" *ngIf="reviewStats?.totalCount">
+      <div class="rev-score-main">
+        <strong>{{ reviewStats.avgRating | number:'1.1-1' }}</strong>
+        <div>
+          <span class="stars lg">
+            <i *ngFor="let s of getStarArr(reviewStats.avgRating)" [class.on]="s === 'full'" [class.half]="s === 'half'">★</i>
+          </span>
+          <small>Based on {{ reviewStats.totalCount }} {{ reviewStats.totalCount === 1 ? 'review' : 'reviews' }}</small>
+        </div>
+      </div>
+      <div class="rev-bars">
+        <div class="rev-bar" *ngFor="let star of [5,4,3,2,1]">
+          <span>{{ star }}</span>
+          <div class="track"><i [style.width.%]="getStarPercent(star)"></i></div>
+          <em>{{ reviewStats['star' + star] || 0 }}</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="rev-tools" *ngIf="reviews.length">
+      <span>Sort</span>
+      <button type="button" [class.on]="reviewSort === 'newest'" (click)="changeReviewSort('newest')">Newest</button>
+      <button type="button" [class.on]="reviewSort === 'highest'" (click)="changeReviewSort('highest')">Highest</button>
+      <button type="button" [class.on]="reviewSort === 'lowest'" (click)="changeReviewSort('lowest')">Lowest</button>
+    </div>
+
+    <div class="rev-empty" *ngIf="!reviewsLoading && !reviews.length && !showReviewForm">
+      <span class="rev-empty-mark">★</span>
+      <h3>Be the first to review this piece</h3>
+      <p>Tell us how it looks, how it feels, and whether you would wear it again.</p>
+      <button type="button" class="rev-write" (click)="showReviewForm = true">Write a review</button>
+    </div>
 
     <div class="rev-list">
       <article class="rev" *ngFor="let r of reviews">
-        <img *ngIf="r.reviewImage" [src]="r.reviewImage" [alt]="r.reviewerName" />
-        <div>
-          <h3 *ngIf="r.title">{{ r.title }}</h3>
-          <p class="rev-meta">
-            <span class="stars">
-              <i *ngFor="let s of getStarArr(r.rating)" [class.on]="s === 'full'">★</i>
-            </span>
-            {{ r.reviewerName }} · {{ r.rating }}/5
-            <em>Verified</em>
-            {{ formatDate(r.created_at) }}
-          </p>
-          <p class="rev-product">{{ product.name }}</p>
-          <p *ngIf="r.body">{{ r.body }}</p>
+        <div class="rev-top">
+          <span class="avatar">{{ reviewerInitial(r.reviewerName) }}</span>
+          <div class="rev-who">
+            <b>{{ r.reviewerName }}</b>
+            <em>Verified purchase</em>
+          </div>
+          <time>{{ formatDate(r.created_at) }}</time>
         </div>
+        <span class="stars">
+          <i *ngFor="let s of getStarArr(r.rating)" [class.on]="s === 'full'" [class.half]="s === 'half'">★</i>
+        </span>
+        <h3 *ngIf="r.title">{{ r.title }}</h3>
+        <p *ngIf="r.body">{{ r.body }}</p>
+        <img *ngIf="r.reviewImage" [src]="r.reviewImage" [alt]="r.reviewerName" />
       </article>
     </div>
-    <button type="button" class="btn ghost" *ngIf="hasMoreReviews && !reviewsLoading" (click)="loadMoreReviews()">Load more reviews</button>
+
+    <button type="button" class="rev-more" *ngIf="hasMoreReviews && !reviewsLoading" (click)="loadMoreReviews()">Load more reviews</button>
+    <p class="rev-loading" *ngIf="reviewsLoading">Loading reviews…</p>
 
     <form class="rev-form" *ngIf="showReviewForm" (submit)="$event.preventDefault(); submitReview()">
       <h3>Write a review</h3>
+      <p>Your note is shown with your name on this product.</p>
       <div class="form-stars">
-        <button type="button" *ngFor="let s of [1,2,3,4,5]" [class.on]="s <= reviewForm.rating" (click)="reviewForm.rating = s">★</button>
+        <button type="button" *ngFor="let s of [1,2,3,4,5]" [class.on]="s <= reviewForm.rating" (click)="reviewForm.rating = s" [attr.aria-label]="s + ' stars'">★</button>
       </div>
-      <input type="text" placeholder="Review title" [(ngModel)]="reviewForm.title" name="reviewTitle" />
-      <textarea rows="4" placeholder="Start writing here..." [(ngModel)]="reviewForm.body" name="reviewBody"></textarea>
       <input type="text" placeholder="Display name" [(ngModel)]="reviewForm.reviewerName" name="reviewName" />
+      <input type="text" placeholder="Review title" [(ngModel)]="reviewForm.title" name="reviewTitle" />
+      <textarea rows="4" placeholder="How does this piece look and feel?" [(ngModel)]="reviewForm.body" name="reviewBody"></textarea>
       <div class="form-actions">
         <button type="button" class="text-link" (click)="showReviewForm = false">Cancel</button>
         <button type="submit" class="btn solid" [disabled]="reviewSubmitting">{{ reviewSubmitting ? 'Submitting...' : 'Submit review' }}</button>
@@ -305,7 +327,7 @@
   </section>
 
   <section class="reels" *ngIf="reels.length">
-    <h2>On reel</h2>
+    <h2>Product Videos</h2>
     <div class="reel-row" #pdpReelsTrack>
       <button type="button" *ngFor="let reel of reels" (click)="openReel(reel)">
         <video [src]="reel.videoUrl" [poster]="reel.thumbnail || ''" muted loop playsinline

@@ -177,7 +177,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         this.reviews = [];
         this.activeImageIdx = 0;
         this.selectedOptions = {};
-        this.accOpen = {};
+        this.accOpen = { desc: true };
         this.shareOpen = false;
         this.lightboxOpen = false;
         this.addQty = 1;
@@ -368,6 +368,11 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+    reviewerInitial(name: string): string {
+        const clean = (name || '').trim();
+        return clean ? clean.charAt(0).toUpperCase() : 'O';
+    }
+
     getStarArr(rating: number): string[] {
         const arr: string[] = [];
         for (let i = 1; i <= 5; i++) {

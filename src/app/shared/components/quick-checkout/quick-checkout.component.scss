@@ -145,7 +145,7 @@ $red:    var(--primary, #1c1410);
     overflow: hidden;
     background: #f5f0ff;
     flex-shrink: 0;
-    img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    img { width: 100%; height: 100%; object-fit: contain; display: block; }
 }
 
 .qc-product-info { flex: 1; min-width: 0; }

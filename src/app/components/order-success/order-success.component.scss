@@ -173,7 +173,7 @@ $red:     #e53935;
     overflow: hidden;
     flex-shrink: 0;
     background: #f5f0ff;
-    img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    img { width: 100%; height: 100%; object-fit: contain; display: block; }
 }
 
 .os-item-img-ph {

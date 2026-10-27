@@ -106,7 +106,7 @@
 .cart-item-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .cart-item-img-placeholder {
@@ -382,7 +382,7 @@
 .cart-saved-img {
   width: 60px;
   height: 75px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 2px;
   flex-shrink: 0;
 }
