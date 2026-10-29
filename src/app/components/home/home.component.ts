@@ -8,6 +8,7 @@ import { CartService } from '../../shared/services/cart.service';
 import { SharedService } from '../../shared/services/shared.service';
 import { QuickCheckoutService } from '../../shared/services/quick-checkout.service';
 import { HomeBannerService } from '../../shared/services/home-banner.service';
+import { HomeSlotService } from '../../shared/services/home-slot.service';
 import { ReelsService } from '../../shared/services/reels.service';
 import { AppStoreService } from '../../shared/services/app-store.service';
 
@@ -36,6 +37,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     qty:             { [id: number]: number } = {};
     selectedVariant: { [id: number]: { [vi: number]: number } } = {};
 
+    homeSearch = '';
+    perkKeys = ['perk_1', 'perk_2', 'perk_3', 'perk_4'];
+    giftKeys = ['gift_1', 'gift_2', 'gift_3'];
+    slots: { [key: string]: any } = {};
     isMobile = false;
     private catSub?: Subscription;
 
@@ -46,6 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         public sharedservice: SharedService,
         public qcService: QuickCheckoutService,
         private bannersApi: HomeBannerService,
+        private homeSlotsApi: HomeSlotService,
         private reelsApi: ReelsService,
         public appStore: AppStoreService,
         @Inject(PLATFORM_ID) private platformId: Object
@@ -55,6 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.checkDevice();
         this.loadProducts();
         this.loadBanners();
+        this.loadSlots();
         this.loadReels();
         this.rootCategories = this.appStore.rootCategories;
         this.catSub = this.appStore.categories$.subscribe(() => {
@@ -85,6 +92,28 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
+    loadSlots() {
+        this.homeSlotsApi.getActive().pipe(catchError(() => of({ data: [] }))).subscribe((res: any) => {
+            const map: { [key: string]: any } = {};
+            (res?.data || []).forEach((row: any) => { map[row.slotKey] = row; });
+            this.slots = map;
+        });
+    }
+
+    slot(key: string): any {
+        return this.slots[key] || {};
+    }
+
+    openSlot(row: any) {
+        const url = row?.link;
+        if (!url) return;
+        if (/^https?:/i.test(url)) {
+            window.open(url, '_blank');
+            return;
+        }
+        this.router.navigateByUrl(url);
+    }
+
     loadReels() {
         this.reelsApi.getActive().pipe(catchError(() => of({ data: [] }))).subscribe((res: any) => {
             this.reels = res?.data || [];
@@ -92,7 +121,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     loadProducts() {
-        this.productService.getProducts({ limit: 12, offset: 0 })
+        this.productService.getProducts({ limit: 4, offset: 0 })
             .pipe(catchError(() => of({ data: [] })))
             .subscribe((res: any) => {
                 const raw = res?.data || res?.products || [];
@@ -140,6 +169,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         event?.stopPropagation();
         this.slideIndex = index;
         this.startSlider();
+    }
+
+    get homeProducts(): any[] {
+        return this.products.slice(0, 4);
+    }
+
+    submitHomeSearch() {
+        const q = this.homeSearch.trim();
+        if (!q) return;
+        this.router.navigate(['/shop'], { queryParams: { search: q } });
     }
 
     openBanner(banner: any) {

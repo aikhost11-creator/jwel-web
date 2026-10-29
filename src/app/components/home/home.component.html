@@ -1,3 +1,12 @@
+<section class="home-search">
+    <form (submit)="$event.preventDefault(); submitHomeSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="18" height="18" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.2" y2="16.2"/>
+        </svg>
+        <input type="search" [(ngModel)]="homeSearch" name="homeSearch" placeholder="Search jewellery" />
+    </form>
+</section>
+
 <section class="home-slider-section">
     @if (bannersLoading) {
         <div class="slider-skeleton"></div>
@@ -28,69 +37,77 @@
             }
         </div>
     } @else {
-        <div class="jewel-hero">
-            <div class="jewel-hero-inner">
-                <span class="jewel-kicker">Maison</span>
-                <h1>{{ siteName }}</h1>
-                <p>{{ tagline }}</p>
-                <a routerLink="/shop" class="jewel-hero-btn">Explore the collection</a>
-            </div>
+        <div class="slot-banner ratio-800" aria-hidden="true">
+            <span>Banner 2000 × 800</span>
         </div>
     }
 </section>
 
-<section class="jewel-trust">
-    <div class="jewel-trust-item"><span>✦</span> Hallmarked metals</div>
-    <div class="jewel-trust-item"><span>✦</span> Certified stones</div>
-    <div class="jewel-trust-item"><span>✦</span> Quick checkout</div>
-    <div class="jewel-trust-item"><span>✦</span> Easy returns</div>
+<section class="home-perks" aria-label="Highlights">
+    @for (key of perkKeys; track key) {
+        <button type="button" class="perk" (click)="openSlot(slot(key))">
+            <div class="perk-photo">
+                @if (slot(key).image) {
+                    <img [src]="slot(key).image" alt="" />
+                }
+            </div>
+            <span class="perk-label">{{ slot(key).label }}</span>
+        </button>
+    }
 </section>
 
-@if (rootCategories.length) {
-<section class="jewel-cats">
-    <div class="jewel-head">
-        <span class="jewel-kicker">Collections</span>
-        <h2>Shop by category</h2>
-    </div>
-    <div class="cat-grid">
-        @for (cat of rootCategories; track cat.id) {
-            <a class="cat-card" [routerLink]="['/category', cat.id]">
-                <div class="cat-visual" [class.has-photo]="!!cat.image">
-                    @if (cat.image) {
-                        <img [src]="cat.image" [alt]="cat.name" loading="lazy" decoding="async" />
-                    } @else {
-                        <span>{{ cat.name.slice(0, 1) }}</span>
-                    }
-                </div>
-                <div class="cat-copy">
-                    <strong>{{ cat.name }}</strong>
-                    <em>View pieces</em>
-                </div>
-            </a>
-        }
-    </div>
+<section class="home-split">
+    <button type="button" class="split-card" (click)="openSlot(slot('audience_him'))">
+        <div class="split-photo">
+            @if (slot('audience_him').image) {
+                <img [src]="slot('audience_him').image" alt="" />
+            }
+        </div>
+        <strong>{{ slot('audience_him').label || 'Shop for him' }}</strong>
+    </button>
+    <button type="button" class="split-card" (click)="openSlot(slot('audience_her'))">
+        <div class="split-photo">
+            @if (slot('audience_her').image) {
+                <img [src]="slot('audience_her').image" alt="" />
+            }
+        </div>
+        <strong>{{ slot('audience_her').label || 'Shop for her' }}</strong>
+    </button>
 </section>
-}
+
+<section class="home-banner-slot">
+    <button type="button" class="slot-banner ratio-800" (click)="openSlot(slot('banner_campaign'))">
+        @if (slot('banner_campaign').image) {
+            <img [src]="slot('banner_campaign').image" alt="" />
+        } @else {
+            <span>Banner 2000 × 800</span>
+        }
+    </button>
+</section>
+
+<section class="home-banner-slot">
+    <button type="button" class="slot-banner ratio-800" (click)="openSlot(slot('banner_mid'))">
+        @if (slot('banner_mid').image) {
+            <img [src]="slot('banner_mid').image" alt="" />
+        } @else {
+            <span>Banner 2000 × 800</span>
+        }
+    </button>
+</section>
 
 <section class="featured-section">
     <div class="featured-inner">
-        <div class="featured-heading">
-            <span class="jewel-kicker">The edit</span>
-            <h2 class="featured-title">Our collection</h2>
-            <p class="featured-sub">Pieces finished to be worn, gifted, and kept.</p>
-        </div>
-
         @if (productsLoading) {
-        <div class="home-grid">
-            @for (s of [1,2,3,4,5,6,7,8]; track s) {
+        <div class="home-grid pair">
+            @for (s of [1,2,3,4]; track s) {
                 <div class="home-card is-skeleton"></div>
             }
         </div>
-        } @else if (products.length === 0) {
+        } @else if (homeProducts.length === 0) {
             <p class="fp-empty">The collection is being prepared.</p>
         } @else {
-        <div class="home-grid">
-            @for (p of products; track p.id) {
+        <div class="home-grid pair">
+            @for (p of homeProducts; track p.id) {
             <article class="home-card">
                 <a class="home-card-media" [routerLink]="['/product', p.slug]">
                     @if (p.images?.length) {
@@ -99,6 +116,9 @@
                 </a>
                 <div class="home-card-body">
                     <a class="home-card-name" [routerLink]="['/product', p.slug]">{{ p.name }}</a>
+                    @if (p.avgRating > 0) {
+                        <span class="home-card-rate">{{ p.avgRating | number:'1.1-1' }} ★</span>
+                    }
                     <div class="home-card-price">
                         @if (p.salePrice && p.salePrice < p.price) {
                             <strong>{{ sharedservice.currency }}{{ p.salePrice }}</strong>
@@ -107,53 +127,39 @@
                             <strong>{{ sharedservice.currency }}{{ p.price }}</strong>
                         }
                     </div>
-                    <button type="button" class="home-card-buy" (click)="buyNow($event, p, 1, {})">
-                        {{ sharedservice.siteConfig?.buyNowText || 'Buy Now' }}
-                    </button>
                 </div>
             </article>
             }
         </div>
         <div class="home-more">
-            <a routerLink="/shop">View the full collection</a>
+            <a routerLink="/shop">View more</a>
         </div>
         }
     </div>
 </section>
 
-@if (reels.length) {
-<section class="reels-section">
-    <div class="jewel-head">
-        <span class="jewel-kicker">Atelier</span>
-        <h2>On reel</h2>
-    </div>
-    <div class="reels-swiper">
-        <button class="reels-nav prev" type="button" (click)="scrollReels(-1)" aria-label="Previous reel">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <div class="reels-row" #reelsTrack>
-            @for (reel of reels; track reel.id) {
-                <button class="reel-card" type="button" (click)="openReel(reel)">
-                    <video [attr.data-src]="reel.videoUrl" [poster]="reel.thumbnail || ''" preload="none" muted loop playsinline
-                        (mouseenter)="previewReel($event, true)" (mouseleave)="previewReel($event, false)"></video>
-                    <i class="reel-play" aria-hidden="true"></i>
-                    <span>{{ reel.title || 'Watch' }}</span>
-                </button>
-            }
-        </div>
-        <button class="reels-nav next" type="button" (click)="scrollReels(1)" aria-label="Next reel">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+<section class="home-gifts">
+    <h2>{{ slot('gift_title').label || 'Gifting made easy' }}</h2>
+    <div class="gift-row">
+        @for (key of giftKeys; track key) {
+            <button type="button" class="gift-card" (click)="openSlot(slot(key))">
+                <div class="gift-photo">
+                    @if (slot(key).image) {
+                        <img [src]="slot(key).image" alt="" />
+                    }
+                </div>
+                <span>{{ slot(key).label }}</span>
+            </button>
+        }
     </div>
 </section>
-}
 
-@if (activeReel) {
-<div class="reel-modal" (click)="closeReel()">
-    <div class="reel-modal-card" (click)="$event.stopPropagation()">
-        <button type="button" class="reel-close" (click)="closeReel()" aria-label="Close">×</button>
-        <video [src]="activeReel.videoUrl" [poster]="activeReel.thumbnail || ''" controls autoplay playsinline></video>
-        <p>{{ activeReel.title }}</p>
-    </div>
-</div>
-}
+<section class="home-banner-slot">
+    <button type="button" class="slot-banner ratio-1000" (click)="openSlot(slot('banner_bottom'))">
+        @if (slot('banner_bottom').image) {
+            <img [src]="slot('banner_bottom').image" alt="" />
+        } @else {
+            <span>Banner 2000 × 1000</span>
+        }
+    </button>
+</section>

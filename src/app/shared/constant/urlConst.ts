@@ -41,6 +41,9 @@ export function rebuildUrlConstant() {
     HomeBannerAPI: {
       getActiveBanners: environment.APIUrl + 'homebanner/getActiveBanners',
     },
+    HomeSlotAPI: {
+      getActive: environment.APIUrl + 'homeslot/getActive',
+    },
     ReelsAPI: {
       getActive: environment.APIUrl + 'reels/getActive',
     },
