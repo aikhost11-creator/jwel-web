@@ -310,14 +310,22 @@
     <h2>People Also Bought</h2>
     <p>Similar pieces people are looking at.</p>
     <div class="related-grid">
-      <a *ngFor="let item of related" [routerLink]="['/product', item.slug]">
-        <img *ngIf="cardImage(item)" [src]="cardImage(item)" [alt]="item.name" />
-        <span>{{ item.name }}</span>
-        <strong>
-          {{ money(item.salePrice && item.salePrice < item.price ? item.salePrice : item.price) }}
-          <s *ngIf="item.salePrice && item.salePrice < item.price">{{ money(item.price) }}</s>
-        </strong>
-      </a>
+      <article class="pcard" *ngFor="let item of related">
+        <a class="pcard-img" [routerLink]="['/product', item.slug]">
+          <img *ngIf="cardImage(item)" [src]="cardImage(item)" [alt]="item.name" />
+          <span class="pcard-rate" *ngIf="item.avgRating > 0">{{ item.avgRating | number:'1.1-1' }} <i>★</i><span *ngIf="item.reviewCount"> | {{ item.reviewCount }}</span></span>
+        </a>
+        <div class="pcard-body">
+          <div class="pcard-price">
+            <strong>{{ money(item.salePrice && item.salePrice < item.price ? item.salePrice : item.price) }}</strong>
+            <s *ngIf="item.salePrice && item.salePrice < item.price">{{ money(item.price) }}</s>
+            <button type="button" class="pcard-heart" [class.on]="favService.isFavourite(item.id)" (click)="onFav($event, item)" aria-label="Wishlist"></button>
+          </div>
+          <a class="pcard-name" [routerLink]="['/product', item.slug]">{{ item.name }}</a>
+          <p class="pcard-offer" *ngIf="item.salePrice && item.salePrice < item.price">Get it for <strong>{{ money(item.salePrice) }}</strong> with coupon</p>
+          <button type="button" class="pcard-atc" (click)="addRelated(item)">Add to Cart</button>
+        </div>
+      </article>
     </div>
   </section>
 

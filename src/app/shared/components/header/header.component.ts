@@ -4,6 +4,7 @@ import { SharedService } from '../../services/shared.service';
 import { AppStoreService } from '../../services/app-store.service';
 import { CustomerAuthService } from '../../services/customer-auth.service';
 import { CartService } from '../../services/cart.service';
+import { FavouritesService } from '../../services/favourites.service';
 import { Subscription } from 'rxjs';
 
 export interface DynSubLink { id: number; name: string; image: string; }
@@ -22,6 +23,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     searchTxt = '';
     searchOpen = false;
+    pinOpen = false;
+    deliverPin = '';
+    pinDraft = '';
+    announceIndex = 0;
+    hintIndex = 0;
+    private announceTimer: any;
+    private readonly searchHints = ['Rings', 'Pendants', 'Earrings', 'Bracelets', 'Necklaces'];
 
     get logoUrl(): string {
         return this.sharedService.siteConfig?.logo || 'assets/img/default/logo.png';
@@ -59,10 +67,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private appStore: AppStoreService,
         public authService: CustomerAuthService,
         public cartService: CartService,
+        public favService: FavouritesService,
         private router: Router
     ) {}
 
+    get searchPlaceholder(): string {
+        return `Search "${this.searchHints[this.hintIndex]}"`;
+    }
+
+    get announceText(): string {
+        const raw = this.sharedService.siteConfig?.marqueeItems;
+        const list = Array.isArray(raw) && raw.length
+            ? raw.map((item: any) => String(item?.text || '').trim()).filter(Boolean)
+            : ['Easy returns within 7 days'];
+        return list[this.announceIndex % list.length];
+    }
+
     ngOnInit(): void {
+        this.deliverPin = localStorage.getItem('deliver_pincode') || '';
+        this.pinDraft = this.deliverPin;
+        this.announceTimer = setInterval(() => {
+            this.announceIndex++;
+            this.hintIndex = (this.hintIndex + 1) % this.searchHints.length;
+        }, 2800);
         if (this.appStore.categories.length > 0) {
             this.dynNavItems = this.buildNavItems(this.appStore.categories);
         }
@@ -74,6 +101,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         if (this.catSub) this.catSub.unsubscribe();
         clearTimeout(this.closeTimer);
+        clearInterval(this.announceTimer);
+    }
+
+    togglePin(e: Event) {
+        e.stopPropagation();
+        this.pinOpen = !this.pinOpen;
+        this.accountDropOpen = false;
+        this.pinDraft = this.deliverPin;
+    }
+
+    savePin() {
+        const pin = this.pinDraft.replace(/\D/g, '').slice(0, 6);
+        if (pin.length !== 6) return;
+        this.deliverPin = pin;
+        localStorage.setItem('deliver_pincode', pin);
+        this.pinOpen = false;
+    }
+
+    goAccount() {
+        this.accountDropOpen = !this.accountDropOpen;
+        this.pinOpen = false;
+    }
+
+    goCart() {
+        this.router.navigate(this.cartService.getCount() ? ['/checkout'] : ['/shop']);
     }
 
     buildNavItems(flat: any[]): DynNavItem[] {
@@ -194,6 +246,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     onDocClick() {
         this.accountDropOpen = false;
         this.cartDropOpen = false;
+        this.pinOpen = false;
     }
 
     @HostListener('document:keydown.escape')

@@ -21,6 +21,7 @@ import { QuickCheckoutComponent } from './shared/components/quick-checkout/quick
 import { LegalPageComponent } from './components/legal-page/legal-page.component';
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { FaqsComponent } from './components/faqs/faqs.component';
+import { FavouritesComponent } from './components/favourites/favourites.component';
 
 export function initAppConfig(cfg: ConfigService) {
   return () => cfg.load();
@@ -41,6 +42,7 @@ export function initAppConfig(cfg: ConfigService) {
     LegalPageComponent,
     AboutUsComponent,
     FaqsComponent,
+    FavouritesComponent,
   ],
   imports: [
     CommonModule,

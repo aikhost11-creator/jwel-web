@@ -250,38 +250,24 @@
     </ng-container>
 
     <!-- Products -->
-    <a class="product-card" *ngFor="let p of products" [routerLink]="['/product', p.slug]">
-      <div class="prod-img-wrap">
+    <article class="product-card" *ngFor="let p of products">
+      <a class="prod-img-wrap" [routerLink]="['/product', p.slug]">
         <img *ngIf="getFirstImage(p.images)" [src]="getFirstImage(p.images)" [alt]="p.name" loading="lazy" />
-        <div *ngIf="!getFirstImage(p.images)" class="prod-img-empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" width="36" height="36">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-        </div>
-        <span class="prod-sale-tag" *ngIf="p.salePrice">SALE</span>
-      </div>
+        <span class="pc-rate" *ngIf="p.avgRating > 0">{{ p.avgRating | number:'1.1-1' }} <i>★</i><span *ngIf="p.reviewCount"> | {{ p.reviewCount }}</span></span>
+      </a>
       <div class="prod-info">
-        <div class="prod-name">{{p.name}}</div>
-        <div class="prod-prices">
-          <span class="price-sale" *ngIf="p.salePrice">{{sharedService.currency}}{{p.salePrice}}</span>
-          <span class="price-orig" [class.crossed]="p.salePrice">{{sharedService.currency}}{{p.price}}</span>
+        <div class="pc-price-row">
+          <div class="prod-prices">
+            <span class="price-sale">{{ sharedService.currency }}{{ payPrice(p) }}</span>
+            <span class="price-orig crossed" *ngIf="p.salePrice && p.salePrice < p.price">{{ sharedService.currency }}{{ p.price }}</span>
+          </div>
+          <button type="button" class="pc-heart" [class.on]="favService.isFavourite(p.id)" (click)="onFav($event, p)" aria-label="Wishlist"></button>
         </div>
-        <div class="prod-stars" *ngIf="p.reviewCount > 0">
-          <span *ngFor="let s of [1,2,3,4,5]" class="star" [class.on]="s <= p.avgRating">★</span>
-          <span class="star-count">({{p.reviewCount}})</span>
-        </div>
-        <div class="prod-swatches" *ngIf="p.variants?.length">
-          <ng-container *ngFor="let v of p.variants">
-            <ng-container *ngIf="v.name?.toLowerCase()==='colour'||v.name?.toLowerCase()==='color'">
-              <span class="swatch" *ngFor="let o of v.options.slice(0,4)" [style.background]="o.value" [title]="o.label"></span>
-              <span class="swatch-more" *ngIf="v.options.length>4">+{{v.options.length-4}}</span>
-            </ng-container>
-          </ng-container>
-        </div>
+        <a class="prod-name" [routerLink]="['/product', p.slug]">{{ p.name }}</a>
+        <p class="pc-offer" *ngIf="p.salePrice && p.salePrice < p.price">Get it for <strong>{{ sharedService.currency }}{{ p.salePrice }}</strong> with coupon</p>
+        <button type="button" class="pc-atc" (click)="onAdd($event, p)">Add to Cart</button>
       </div>
-    </a>
+    </article>
 
   </div>
 

@@ -43,35 +43,56 @@
     }
 </section>
 
+@if (rootCategories.length) {
+<section class="cat-rail" aria-label="Categories">
+    <button type="button" class="cat-rail-nav prev" (click)="scrollCats(-1)" aria-label="Previous categories">‹</button>
+    <div class="cat-rail-track" #catTrack>
+        @for (cat of rootCategories; track cat.id) {
+            <a class="cat-tile" [routerLink]="['/category', cat.id]">
+                <span class="cat-tile-img">
+                    @if (cat.image) {
+                        <img [src]="cat.image" [alt]="cat.name" loading="lazy" decoding="async" />
+                    } @else {
+                        <b>{{ cat.name.slice(0, 1) }}</b>
+                    }
+                </span>
+                <em>{{ cat.name }}</em>
+            </a>
+        }
+    </div>
+    <button type="button" class="cat-rail-nav next" (click)="scrollCats(1)" aria-label="Next categories">›</button>
+</section>
+}
+
 <section class="home-perks" aria-label="Highlights">
     @for (key of perkKeys; track key) {
         <button type="button" class="perk" (click)="openSlot(slot(key))">
-            <div class="perk-photo">
+            <span class="perk-photo">
                 @if (slot(key).image) {
                     <img [src]="slot(key).image" alt="" />
                 }
-            </div>
-            <span class="perk-label">{{ slot(key).label }}</span>
+            </span>
+            <span class="perk-label">{{ slot(key).label || 'Add text' }}</span>
         </button>
     }
 </section>
 
 <section class="home-split">
-    <button type="button" class="split-card" (click)="openSlot(slot('audience_him'))">
-        <div class="split-photo">
+    <button type="button" class="split-card him" (click)="openSlot(slot('audience_him'))">
+        <span class="split-pill">{{ slot('audience_him').label || 'Shop For Him' }}</span>
+        <span class="split-photo">
             @if (slot('audience_him').image) {
                 <img [src]="slot('audience_him').image" alt="" />
             }
-        </div>
-        <strong>{{ slot('audience_him').label || 'Shop for him' }}</strong>
+        </span>
     </button>
-    <button type="button" class="split-card" (click)="openSlot(slot('audience_her'))">
-        <div class="split-photo">
+    <button type="button" class="split-card her" (click)="openSlot(slot('audience_her'))">
+        <span class="split-pill">{{ slot('audience_her').label || 'Shop For Her' }}</span>
+        <span class="split-photo">
             @if (slot('audience_her').image) {
                 <img [src]="slot('audience_her').image" alt="" />
             }
-        </div>
-        <strong>{{ slot('audience_her').label || 'Shop for her' }}</strong>
+        </span>
     </button>
 </section>
 
@@ -108,32 +129,53 @@
         } @else {
         <div class="home-grid pair">
             @for (p of homeProducts; track p.id) {
-            <article class="home-card">
-                <a class="home-card-media" [routerLink]="['/product', p.slug]">
+            <article class="pcard">
+                <a class="pcard-img" [routerLink]="['/product', p.slug]">
                     @if (p.images?.length) {
                         <img [src]="p.images[0]" [alt]="p.name" loading="lazy" decoding="async" />
                     }
-                </a>
-                <div class="home-card-body">
-                    <a class="home-card-name" [routerLink]="['/product', p.slug]">{{ p.name }}</a>
                     @if (p.avgRating > 0) {
-                        <span class="home-card-rate">{{ p.avgRating | number:'1.1-1' }} ★</span>
+                        <span class="pcard-rate">{{ p.avgRating | number:'1.1-1' }} <i>★</i><span *ngIf="p.reviewCount"> | {{ p.reviewCount }}</span></span>
                     }
-                    <div class="home-card-price">
-                        @if (p.salePrice && p.salePrice < p.price) {
-                            <strong>{{ sharedservice.currency }}{{ p.salePrice }}</strong>
-                            <s>{{ sharedservice.currency }}{{ p.price }}</s>
-                        } @else {
-                            <strong>{{ sharedservice.currency }}{{ p.price }}</strong>
-                        }
+                </a>
+                <div class="pcard-body">
+                    <div class="pcard-price">
+                        <strong>{{ sharedservice.currency }}{{ payPrice(p) }}</strong>
+                        <s *ngIf="p.salePrice && p.salePrice < p.price">{{ sharedservice.currency }}{{ p.price }}</s>
+                        <button type="button" class="pcard-heart" [class.on]="favService.isFavourite(p.id)" (click)="onFav($event, p)" aria-label="Wishlist"></button>
                     </div>
+                    <a class="pcard-name" [routerLink]="['/product', p.slug]">{{ p.name }}</a>
+                    <p class="pcard-offer" *ngIf="p.salePrice && p.salePrice < p.price">Get it for <strong>{{ sharedservice.currency }}{{ p.salePrice }}</strong> with coupon</p>
+                    <button type="button" class="pcard-atc" (click)="onAdd($event, p)">Add to Cart</button>
                 </div>
             </article>
             }
         </div>
-        <div class="home-more">
+        <div class="home-more" *ngIf="productTotal > 40">
             <a routerLink="/shop">View more</a>
         </div>
+        }
+    </div>
+</section>
+
+<section class="story-block">
+    <button type="button" class="story-banner" (click)="openSlot(slot('story_banner'))">
+        @if (slot('story_banner').image) {
+            <img [src]="slot('story_banner').image" alt="" />
+        } @else {
+            <span>Banner</span>
+        }
+    </button>
+    <div class="story-grid">
+        @for (key of storyKeys; track key) {
+            <button type="button" class="story-card" (click)="openSlot(slot(key))">
+                <strong>{{ slot(key).label || 'Title' }}</strong>
+                <span class="story-photo">
+                    @if (slot(key).image) {
+                        <img [src]="slot(key).image" alt="" />
+                    }
+                </span>
+            </button>
         }
     </div>
 </section>
@@ -160,6 +202,29 @@
             <img [src]="slot('banner_bottom').image" alt="" />
         } @else {
             <span>Banner 2000 × 1000</span>
+        }
+    </button>
+</section>
+
+<section class="bond-block">
+    <h2>{{ slot('bond_title').label || 'Shop by Bond' }}</h2>
+    <div class="bond-grid">
+        @for (key of bondKeys; track key) {
+            <button type="button" class="bond-card" (click)="openSlot(slot(key))">
+                <span class="bond-photo">
+                    @if (slot(key).image) {
+                        <img [src]="slot(key).image" [alt]="slot(key).label || ''" />
+                    }
+                </span>
+                <em>{{ slot(key).label || 'Title' }}</em>
+            </button>
+        }
+    </div>
+    <button type="button" class="bond-banner" (click)="openSlot(slot('bond_banner'))">
+        @if (slot('bond_banner').image) {
+            <img [src]="slot('bond_banner').image" alt="" />
+        } @else {
+            <span>Banner</span>
         }
     </button>
 </section>

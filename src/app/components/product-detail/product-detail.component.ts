@@ -10,6 +10,7 @@ import { QuickCheckoutService } from '../../shared/services/quick-checkout.servi
 import { MetaPixelService } from '../../shared/services/meta-pixel.service';
 import { SeoService } from '../../shared/services/seo.service';
 import { ReelsService } from '../../shared/services/reels.service';
+import { FavouritesService } from '../../shared/services/favourites.service';
 
 @Component({
     selector: 'app-product-detail',
@@ -104,7 +105,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         private metaPixel: MetaPixelService,
         private sanitizer: DomSanitizer,
         private seo: SeoService,
-        private reelsApi: ReelsService
+        private reelsApi: ReelsService,
+        public favService: FavouritesService
     ) {}
 
     get safeDescription(): SafeHtml {
@@ -307,6 +309,20 @@ export class ProductDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         this.showVariantError = false;
         this.qcService.open(this.product, this.addQty, { ...this.selectedOptions });
+    }
+
+    addRelated(item: any) {
+        this.cartService.addItem(item, 1, {});
+    }
+
+    onFav(e: Event, item: any) {
+        e.preventDefault();
+        e.stopPropagation();
+        const images = Array.isArray(item.images) ? item.images : [];
+        this.favService.toggle({
+            id: item.id, name: item.name, slug: item.slug,
+            price: item.price, salePrice: item.salePrice || null, images
+        });
     }
 
     goToCheckout() {

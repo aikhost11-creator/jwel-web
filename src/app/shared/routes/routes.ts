@@ -7,6 +7,7 @@ import { OrderSuccessComponent } from "../../components/order-success/order-succ
 import { LegalPageComponent } from "../../components/legal-page/legal-page.component";
 import { AboutUsComponent } from "../../components/about-us/about-us.component";
 import { FaqsComponent } from "../../components/faqs/faqs.component";
+import { FavouritesComponent } from "../../components/favourites/favourites.component";
 
 export const routing: Routes = [
     { path: '', component: HomeComponent },
@@ -21,6 +22,7 @@ export const routing: Routes = [
     { path: 'order-success', component: OrderSuccessComponent },
     { path: 'about-us', component: AboutUsComponent },
     { path: 'faqs', component: FaqsComponent },
+    { path: 'wishlist', component: FavouritesComponent },
     { path: 'shipping-policy', component: LegalPageComponent, data: { slug: 'shipping-policy' } },
     { path: 'return-refund', component: LegalPageComponent, data: { slug: 'return-refund' } },
     { path: 'privacy-policy', component: LegalPageComponent, data: { slug: 'privacy-policy' } },

@@ -5,6 +5,7 @@ import { of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ProductService } from '../../shared/services/product.service';
 import { CartService } from '../../shared/services/cart.service';
+import { FavouritesService } from '../../shared/services/favourites.service';
 import { SharedService } from '../../shared/services/shared.service';
 import { QuickCheckoutService } from '../../shared/services/quick-checkout.service';
 import { HomeBannerService } from '../../shared/services/home-banner.service';
@@ -21,6 +22,7 @@ import { AppStoreService } from '../../shared/services/app-store.service';
 export class HomeComponent implements OnInit, OnDestroy {
 
     products: any[] = [];
+    productTotal = 0;
     productsLoading = true;
 
     banners: any[] = [];
@@ -31,6 +33,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     reels: any[] = [];
     activeReel: any = null;
     @ViewChild('reelsTrack') reelsTrack?: ElementRef<HTMLElement>;
+    @ViewChild('catTrack') catTrack?: ElementRef<HTMLElement>;
     rootCategories: any[] = [];
 
     activeImg:       { [id: number]: number } = {};
@@ -40,6 +43,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     homeSearch = '';
     perkKeys = ['perk_1', 'perk_2', 'perk_3', 'perk_4'];
     giftKeys = ['gift_1', 'gift_2', 'gift_3'];
+    storyKeys = ['story_1', 'story_2', 'story_3', 'story_4'];
+    bondKeys = ['bond_1', 'bond_2', 'bond_3', 'bond_4', 'bond_5', 'bond_6', 'bond_7', 'bond_8', 'bond_9'];
     slots: { [key: string]: any } = {};
     isMobile = false;
     private catSub?: Subscription;
@@ -47,6 +52,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     constructor(
         private productService: ProductService,
         public cartService: CartService,
+        public favService: FavouritesService,
         private router: Router,
         public sharedservice: SharedService,
         public qcService: QuickCheckoutService,
@@ -105,8 +111,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     openSlot(row: any) {
-        const url = row?.link;
-        if (!url) return;
+        const url = row?.link || '/shop';
         if (/^https?:/i.test(url)) {
             window.open(url, '_blank');
             return;
@@ -121,10 +126,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     loadProducts() {
-        this.productService.getProducts({ limit: 4, offset: 0 })
+        this.productService.getProducts({ limit: 40, offset: 0 })
             .pipe(catchError(() => of({ data: [] })))
             .subscribe((res: any) => {
                 const raw = res?.data || res?.products || [];
+                this.productTotal = Number(res?.totalCount || raw.length);
                 this.products = raw.map((p: any) => ({
                     ...p,
                     images:   this.parseJson(p.images,   []),
@@ -172,7 +178,27 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     get homeProducts(): any[] {
-        return this.products.slice(0, 4);
+        return this.products.slice(0, 40);
+    }
+
+    payPrice(p: any): number {
+        return p?.salePrice && p.salePrice < p.price ? p.salePrice : p.price;
+    }
+
+    onAdd(e: Event, p: any) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.cartService.addItem(p, 1, {});
+    }
+
+    onFav(e: Event, p: any) {
+        e.preventDefault();
+        e.stopPropagation();
+        const images = Array.isArray(p.images) ? p.images : [];
+        this.favService.toggle({
+            id: p.id, name: p.name, slug: p.slug,
+            price: p.price, salePrice: p.salePrice || null, images
+        });
     }
 
     submitHomeSearch() {
@@ -182,13 +208,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     openBanner(banner: any) {
-        const url = banner?.redirectionUrl;
-        if (!url) return;
+        const url = banner?.redirectionUrl || '/shop';
         if (/^https?:/i.test(url)) {
             window.open(url, '_blank');
             return;
         }
         this.router.navigateByUrl(url);
+    }
+
+    scrollCats(dir: number) {
+        const el = this.catTrack?.nativeElement;
+        if (!el) return;
+        const card = el.querySelector('.cat-tile') as HTMLElement | null;
+        const step = (card?.offsetWidth || 108) + 18;
+        el.scrollBy({ left: dir * step * 3, behavior: 'smooth' });
     }
 
     scrollReels(dir: number) {

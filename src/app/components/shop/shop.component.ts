@@ -4,6 +4,8 @@ import { Subscription, combineLatest } from 'rxjs';
 import { ProductService } from '../../shared/services/product.service';
 import { AppStoreService } from '../../shared/services/app-store.service';
 import { SharedService } from '../../shared/services/shared.service';
+import { CartService } from '../../shared/services/cart.service';
+import { FavouritesService } from '../../shared/services/favourites.service';
 
 @Component({
     selector: 'app-shop',
@@ -57,8 +59,30 @@ export class ShopComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         public appStore: AppStoreService,
-        public sharedService: SharedService
+        public sharedService: SharedService,
+        public cartService: CartService,
+        public favService: FavouritesService
     ) {}
+
+    payPrice(p: any): number {
+        return p?.salePrice && p.salePrice < p.price ? p.salePrice : p.price;
+    }
+
+    onAdd(e: Event, p: any) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.cartService.addItem(p, 1, {});
+    }
+
+    onFav(e: Event, p: any) {
+        e.preventDefault();
+        e.stopPropagation();
+        const images = Array.isArray(p.images) ? p.images : [];
+        this.favService.toggle({
+            id: p.id, name: p.name, slug: p.slug,
+            price: p.price, salePrice: p.salePrice || null, images
+        });
+    }
 
     ngOnInit(): void {
         if (this.appStore.categories.length) this.allCategories = [...this.appStore.categories];
