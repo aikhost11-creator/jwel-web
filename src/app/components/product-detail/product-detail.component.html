@@ -107,47 +107,11 @@
       </button>
       <p class="variant-error" *ngIf="showVariantError">Please select {{ missingVariantName }} before ordering</p>
 
-      <div class="sale">
-        <div class="sale-head">
-          <span class="sale-badge">SALE</span>
-          <span>Early access — buy more, save more</span>
-        </div>
-        <div class="sale-tiers">
-          <div class="tier">
-            <span>Buy 1</span>
-            <span class="off">Free shipping</span>
-          </div>
-          <div class="tier hot">
-            <span>Prepaid</span>
-            <span class="off">Extra off</span>
-          </div>
-          <div class="tier best">
-            <em>Best value</em>
-            <span>Buy 3</span>
-            <span class="off">7 days</span>
-          </div>
-        </div>
-        <p class="sale-note">+ Hallmarked gold, insured packing</p>
-        <p class="sale-sub">Offers shown here follow the checkout on this order.</p>
-        <div class="timer">
-          <span class="timer-label">Sale ends in</span>
-          <div class="timer-units">
-            <div><b>{{ saleClock.d }}</b><small>Days</small></div>
-            <i>:</i>
-            <div><b>{{ saleClock.h }}</b><small>Hrs</small></div>
-            <i>:</i>
-            <div><b>{{ saleClock.m }}</b><small>Min</small></div>
-            <i>:</i>
-            <div><b>{{ saleClock.s }}</b><small>Sec</small></div>
-          </div>
-        </div>
-      </div>
-
       <div class="delivery">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6">
           <path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/>
         </svg>
-        <p>Estimate delivery times: <strong>5 to 6 days.</strong></p>
+        <p>Estimate delivery times: <strong>4 to 6 days.</strong></p>
       </div>
 
       <div class="acc" *ngIf="specRows.length" [class.open]="accOpen['specs']">
@@ -172,20 +136,6 @@
           <i class="plus"></i>
         </button>
         <div class="acc-body desc" [innerHTML]="safeDescription"></div>
-      </div>
-
-      <div class="acc" [class.open]="accOpen['care']">
-        <button type="button" class="acc-head" (click)="toggleAcc('care')">
-          <strong>Care</strong>
-          <i class="plus"></i>
-        </button>
-        <div class="acc-body">
-          <div class="spec" *ngFor="let row of careRows">
-            <h6>{{ row.title }}</h6>
-            <p *ngIf="row.text">{{ row.text }}</p>
-          </div>
-          <p *ngIf="!careRows.length">Wipe with a soft dry cloth after wear. Keep the piece in its pouch, away from perfume and moisture, and store it separately so it does not scratch.</p>
-        </div>
       </div>
 
       <div class="acc" [class.open]="accOpen['ship']">
@@ -216,12 +166,6 @@
         <div class="acc-body"><p>{{ faq.answer }}</p></div>
       </div>
     </div>
-  </div>
-
-  <div class="trust">
-    <div><b>7 Days</b><span>Easy returns</span></div>
-    <div><b>Hallmarked</b><span>Checked by hand</span></div>
-    <div><b>COD</b><span>Available at checkout</span></div>
   </div>
 
   <section class="reviews" id="reviews">

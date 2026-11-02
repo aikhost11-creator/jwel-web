@@ -348,7 +348,7 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
 }
 .pcard-atc {
   margin-top: 6px; width: 100%; height: 40px; border: 0; border-radius: 4px;
-  background: #f7c5d4; color: #1c1c1c; font-size: 15px; font-weight: 600; cursor: pointer;
+  background: var(--primary, #212326); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
 }
 .reel-row { display: flex; gap: 12px; overflow: auto; padding-bottom: 8px; }
 .reel-row button {
@@ -454,7 +454,7 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
   .pcard-heart::before { font-size: 18px; }
   .pcard-name { display: block; white-space: nowrap; text-overflow: ellipsis; -webkit-line-clamp: 1; font-size: 12px; }
   .pcard-offer { font-size: 12px; }
-  .pcard-atc { height: 34px; border-radius: 8px; font-size: 14px; background: #f7c9d6; }
+  .pcard-atc { height: 34px; border-radius: 8px; font-size: 14px; background: var(--primary, #212326); color: #fff; }
   .trust { grid-template-columns: 1fr; text-align: left; }
   .sticky.show { display: flex; }
 }

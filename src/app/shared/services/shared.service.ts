@@ -57,9 +57,9 @@ export class SharedService {
     applyTheme(config: any) {
         if (!config || !this.doc?.documentElement) return;
         const root = this.doc.documentElement;
-        const primary = config.primaryColor || '#1c1410';
-        const accent = config.accentColor || '#c4a265';
-        const headingFont = config.headingFont || 'Cormorant Garamond';
+        const primary = config.primaryColor || '#212326';
+        const accent = config.accentColor || '#c9a24a';
+        const headingFont = config.headingFont || 'Outfit';
         const bodyFont = config.bodyFont || 'Outfit';
         const set = (name: string, value: string) => root.style.setProperty(name, value);
 
@@ -67,14 +67,16 @@ export class SharedService {
         set('--primary-dark', this.shadeColor(primary, -18));
         set('--primary-bg', this.shadeColor(accent, 55));
         set('--accent', accent);
-        set('--secondary', config.secondaryColor || '#3d2b1f');
-        set('--page-bg', config.backgroundColor || '#faf7f2');
-        set('--heading-font', config.headingColor || '#1c1410');
-        set('--normal-font', config.textColor || '#6b5e52');
-        set('--font-heading', `"${headingFont}", serif`);
+        set('--secondary', config.secondaryColor || '#151618');
+        set('--page-bg', config.backgroundColor || '#ffffff');
+        set('--heading-font', config.headingColor || '#212326');
+        set('--normal-font', config.textColor || '#212326');
+        set('--footer-bg', '#fdeeec');
+        set('--announce-bg', '#47080C');
+        set('--font-heading', `"${headingFont}", sans-serif`);
         set('--font-body', `"${bodyFont}", sans-serif`);
-        this.doc.body.style.background = config.backgroundColor || '#faf7f2';
-        this.doc.body.style.color = config.textColor || '#6b5e52';
+        this.doc.body.style.background = config.backgroundColor || '#ffffff';
+        this.doc.body.style.color = config.textColor || '#212326';
         this.doc.body.style.fontFamily = `"${bodyFont}", sans-serif`;
         this.loadFonts(headingFont, bodyFont);
     }

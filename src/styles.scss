@@ -3,8 +3,8 @@
 @import 'ngx-toastr/toastr';
 
 body {
-    background-color: var(--page-bg, #faf7f2);
-    color: var(--normal-font, #6b5e52);
+    background-color: var(--page-bg, #ffffff);
+    color: var(--normal-font, #212326);
     font-family: var(--font-body), "Outfit", sans-serif;
 }
 
@@ -40,17 +40,22 @@ h1, h2, h3,
 
 .fp-buy-btn,
 .pdp-buy-btn,
-.qc-pay-btn {
-    background: var(--primary, #1c1410) !important;
-    border-radius: 2px !important;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+.qc-pay-btn,
+.pcard-atc,
+.pc-atc {
+    background: var(--primary, #212326) !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    letter-spacing: 0.04em;
+    text-transform: none;
 }
 
 .fp-buy-btn:hover,
 .pdp-buy-btn:hover,
-.qc-pay-btn:hover {
-    background: var(--secondary, #3d2b1f) !important;
+.qc-pay-btn:hover,
+.pcard-atc:hover,
+.pc-atc:hover {
+    background: var(--secondary, #151618) !important;
 }
 
 :disabled {

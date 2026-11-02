@@ -1,12 +1,12 @@
-// ─── Footer tokens ───────────────────────────────────────────────────────────
-$ft-bg:        #0a0a0c;
-$ft-bg-soft:   #121216;
-$ft-bg-card:   #18181f;
-$ft-border:    rgba(255, 255, 255, 0.08);
-$ft-border-hi: rgba(255, 255, 255, 0.16);
-$ft-text:      rgba(255, 255, 255, 0.92);
-$ft-muted:     rgba(255, 255, 255, 0.55);
-$ft-accent:    var(--primary, #000);
+// ─── Footer tokens (Rubans-style jewellery palette) ───────────────────────────
+$ft-bg:        #fdeeec;
+$ft-bg-soft:   #fae6e3;
+$ft-bg-card:   #ffffff;
+$ft-border:    rgba(33, 35, 38, 0.1);
+$ft-border-hi: rgba(33, 35, 38, 0.18);
+$ft-text:      #212326;
+$ft-muted:     rgba(33, 35, 38, 0.65);
+$ft-accent:    var(--primary, #212326);
 $ft-font:      var(--font-body), "Outfit", sans-serif;
 $ft-radius:    16px;
 $ft-max:       1200px;
@@ -179,8 +179,8 @@ a { color: inherit; text-decoration: none; }
 
 // ─── Footer shell ─────────────────────────────────────────────────────────────
 .site-footer {
-  background: $ft-bg;
-  color: #fff;
+  background: var(--footer-bg, #fdeeec);
+  color: $ft-text;
   font-family: $ft-font;
   position: relative;
   overflow: hidden;
@@ -190,8 +190,8 @@ a { color: inherit; text-decoration: none; }
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 70% 45% at 10% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 35% at 95% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+      radial-gradient(ellipse 70% 45% at 10% 0%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 35% at 95% 100%, rgba(255, 255, 255, 0.35) 0%, transparent 50%);
     pointer-events: none;
   }
 }
@@ -271,7 +271,7 @@ a { color: inherit; text-decoration: none; }
     font-size: 13px;
     font-weight: 700;
     margin-bottom: 2px;
-    color: #fff;
+    color: $ft-text;
   }
 
   span {
@@ -793,4 +793,54 @@ a { color: inherit; text-decoration: none; }
   }
 
   @media (max-width: 768px) { justify-content: center; }
+}
+
+/* Rubans-style light footer: blush bg + charcoal text */
+.site-footer {
+  color: #212326 !important;
+
+  .ft-trust-item strong,
+  .ft-col-title,
+  .ft-brand-name,
+  .ft-link,
+  .ft-copy,
+  .ft-social a,
+  .ft-newsletter-title,
+  .ft-bottom a,
+  .ft-bottom strong,
+  a {
+    color: #212326 !important;
+  }
+
+  .ft-trust-item span,
+  .ft-muted,
+  .ft-copy,
+  p,
+  small,
+  li {
+    color: rgba(33, 35, 38, 0.72) !important;
+  }
+
+  .ft-trust,
+  .ft-main,
+  .ft-bottom,
+  .ft-newsletter {
+    background: transparent;
+    border-color: rgba(33, 35, 38, 0.1);
+  }
+
+  .ft-trust-item,
+  .ft-social a,
+  .ft-pay-item,
+  .ft-badge {
+    background: rgba(255, 255, 255, 0.55) !important;
+    border-color: rgba(33, 35, 38, 0.1) !important;
+  }
+
+  .ft-logo-wrap {
+    box-shadow: 0 4px 18px rgba(33, 35, 38, 0.08);
+    border-color: rgba(33, 35, 38, 0.08);
+  }
+
+  svg { color: #212326; }
 }
