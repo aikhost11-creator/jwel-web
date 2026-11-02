@@ -8,7 +8,51 @@ $line: #ebebeb;
 button, input, textarea { font-family: inherit; }
 h1, h2, h3, strong, b { font-family: $head; color: $ink; }
 
-.pdp { max-width: 1320px; margin: 0 auto; padding: 8px 20px 80px; }
+.pdp { max-width: 1320px; margin: 0 auto; padding: 0 20px 80px; }
+
+.pdp-marquee {
+  width: calc(100% + 40px);
+  margin: 0 -20px 14px;
+  overflow: hidden;
+  background: var(--announce-bg, #47080C);
+  color: #fff;
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
+.pdp-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: pdpMarquee 28s linear infinite;
+  will-change: transform;
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    padding-right: 18px;
+    white-space: nowrap;
+  }
+  em {
+    font-style: normal;
+    font-family: "Poppins", "Outfit", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  i {
+    font-style: normal;
+    opacity: 0.55;
+    font-size: 10px;
+  }
+}
+@keyframes pdpMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pdp-marquee-track { animation: none; }
+}
 .crumbs {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
   padding: 18px 0 22px; font-size: 13px; color: #8a8a8a;
@@ -131,7 +175,13 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
 .btn {
   height: 48px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 15px;
   &.solid { background: #000; color: #fff; border: 1px solid #000; }
-  &.solid:hover { background: #fff; color: #000; }
+  &.solid:hover { background: #111; color: #fff; }
+  &.solid.grow {
+    background: transparent;
+    color: #000;
+    border: 1px solid #000;
+    &:hover { background: #000; color: #fff; }
+  }
   &.block { width: 100%; margin-bottom: 12px; }
   &.grow { flex: 1; }
   &.ghost { background: #fff; border: 1px solid #111; margin-top: 12px; padding: 0 18px; }
@@ -348,7 +398,8 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
 }
 .pcard-atc {
   margin-top: 6px; width: 100%; height: 40px; border: 0; border-radius: 4px;
-  background: var(--primary, #212326); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+  background: transparent; color: #000; border: 1px solid #000; font-size: 15px; font-weight: 600; cursor: pointer;
+  &:hover { background: #000; color: #fff; }
 }
 .reel-row { display: flex; gap: 12px; overflow: auto; padding-bottom: 8px; }
 .reel-row button {
@@ -361,7 +412,7 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
   display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; gap: 8px;
   padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid $line;
   button { flex: 1; height: 46px; border-radius: 4px; font-weight: 600; cursor: pointer; }
-  button:first-child { background: #fff; border: 1px solid #111; }
+  button:first-child { background: transparent; color: #000; border: 1px solid #000; }
   button:last-child { background: #000; color: #fff; border: 1px solid #000; }
   &.show { display: flex; }
 }
@@ -430,6 +481,8 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
 
 @media (max-width: 900px) {
   .pdp { padding: 0 0 88px; }
+  .pdp-marquee { width: 100%; margin: 0 0 10px; height: 32px; }
+  .pdp-marquee-track em { font-size: 10px; letter-spacing: 0.12em; }
   .crumbs, .info, .trust, .reviews, .related, .reels { padding-left: 16px; padding-right: 16px; }
   .pdp-grid { grid-template-columns: 1fr; gap: 0; }
   .gallery { position: static; }
@@ -454,7 +507,7 @@ h1, h2, h3, strong, b { font-family: $head; color: $ink; }
   .pcard-heart::before { font-size: 18px; }
   .pcard-name { display: block; white-space: nowrap; text-overflow: ellipsis; -webkit-line-clamp: 1; font-size: 12px; }
   .pcard-offer { font-size: 12px; }
-  .pcard-atc { height: 34px; border-radius: 8px; font-size: 14px; background: var(--primary, #212326); color: #fff; }
+  .pcard-atc { height: 34px; border-radius: 8px; font-size: 14px; background: transparent; color: #000; border: 1px solid #000; }
   .trust { grid-template-columns: 1fr; text-align: left; }
   .sticky.show { display: flex; }
 }

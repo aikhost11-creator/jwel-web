@@ -193,50 +193,6 @@
       </div>
     </div>
 
-    <!-- Policy cards -->
-    <div class="ft-container">
-      <div class="ft-policies-head">
-        <span class="ft-eyebrow ft-eyebrow-light">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-          </svg>
-          Legal
-        </span>
-        <h4 class="ft-policies-title">Policies &amp; Information</h4>
-        <p class="ft-policies-sub">Tap any policy below — shipping, returns, privacy &amp; terms clearly explained.</p>
-      </div>
-      <div class="ft-policies-grid">
-        <a *ngFor="let p of policyPages" [routerLink]="'/' + p.slug" class="ft-policy-card">
-          <span class="ft-policy-icon">
-            <ng-container [ngSwitch]="p.icon">
-              <svg *ngSwitchCase="'shipping'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-              </svg>
-              <svg *ngSwitchCase="'return'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
-              </svg>
-              <svg *ngSwitchCase="'privacy'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              <svg *ngSwitchCase="'terms'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
-            </ng-container>
-          </span>
-          <span class="ft-policy-label">{{ p.label }}</span>
-          <span class="ft-policy-desc">{{ p.desc }}</span>
-          <span class="ft-policy-arrow">
-            Read policy
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </span>
-        </a>
-      </div>
-    </div>
   </div>
 
   <!-- Mobile -->
@@ -307,9 +263,6 @@
       <p class="ft-copy">
         &copy; {{ currentYear }} <strong>{{ displayDomain }}</strong>. All rights reserved.
       </p>
-      <div class="ft-bottom-links">
-        <a *ngFor="let p of policyPages" [routerLink]="'/' + p.slug">{{ p.label }}</a>
-      </div>
       <div class="ft-bottom-badges">
         <span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">

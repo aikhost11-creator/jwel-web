@@ -17,6 +17,20 @@
 </div>
 
 <div class="pdp" *ngIf="product && !isLoading">
+  <div class="pdp-marquee" aria-hidden="true">
+    <div class="pdp-marquee-track">
+      <span *ngFor="let n of [1,2]">
+        <em>FREE SHIPPING PAN INDIA</em>
+        <i>•</i>
+        <em>CASH ON DELIVERY AVAILABLE</em>
+        <i>•</i>
+        <em>1 YEAR WARRANTY</em>
+        <i>•</i>
+        <em>QUALITY ASSURED PRODUCT</em>
+        <i>•</i>
+      </span>
+    </div>
+  </div>
   <div class="pdp-grid">
     <div class="gallery">
       <div class="gallery-desktop">

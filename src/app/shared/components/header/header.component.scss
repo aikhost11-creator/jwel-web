@@ -705,6 +705,10 @@ $mobile: 768px;
   .site-header { top: 30px; }
 }
 
+.site-header.mobile-header {
+  padding-bottom: 7px;
+}
+
 .mob-header-inner {
   display: flex;
   align-items: center;

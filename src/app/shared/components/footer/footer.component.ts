@@ -123,11 +123,6 @@ export class FooterComponent implements OnInit {
   ngOnInit() {
     this.mobileColumns = [
       { id: 'shop', heading: 'Shop', links: this.shopLinks.map(l => ({ label: l.label, url: l.url })) },
-      {
-        id: 'policies',
-        heading: 'Policies & Legal',
-        links: this.policyPages.map(p => ({ label: p.label, url: '/' + p.slug })),
-      },
     ];
   }
 }
